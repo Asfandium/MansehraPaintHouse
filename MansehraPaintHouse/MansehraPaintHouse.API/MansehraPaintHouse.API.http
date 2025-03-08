@@ -1,0 +1,6 @@
+@MansehraPaintHouse.API_HostAddress = http://localhost:5069
+
+GET {{MansehraPaintHouse.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
