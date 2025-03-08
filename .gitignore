@@ -1,0 +1,22 @@
+# Ignore Visual Studio .vs folder (cache, settings, user-specific files)
+.vs/
+
+# Ignore Visual Studio Code settings
+.vscode/
+
+# Ignore compiled output (build artifacts)
+bin/
+obj/
+
+# Ignore debug and release directories
+**/Debug/
+**/Release/
+
+# Ignore auto-generated AssemblyInfo and cache files
+*.suo
+*.user
+*.cache
+*.csproj.user
+*.sln.ide
+*.AssemblyInfo.cs
+*.AssemblyInfoInputs.cache

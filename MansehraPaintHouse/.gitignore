@@ -1,0 +1,53 @@
+# Ignore Visual Studio .vs folder
+.vs/
+
+# Ignore build and debug files
+bin/
+obj/
+
+# Ignore Copilot and Code Index files
+**/CopilotIndices/
+**/FileContentIndex/
+
+# Ignore user-specific files
+*.suo
+*.user
+*.cache
+*.db-shm
+*.db-wal
+
+# Ignore Test project files (if needed)
+MansehraPaintHouse/MansehraPaintHouse.Test/
+
+
+
+# Ignore Visual Studio cache and temporary files
+.vs/
+*.suo
+*.user
+*.cache
+*.db-shm
+*.db-wal
+*.pidb
+*.log
+
+# Ignore Visual Studio Code workspace settings
+.vscode/
+
+# Ignore build outputs
+bin/
+obj/
+
+# Ignore Copilot and Code Index files
+**/CopilotIndices/
+**/FileContentIndex/
+
+# Ignore debug files
+**/Debug/
+**/Release/
+
+# Ignore project-specific auto-generated files
+*.AssemblyInfo.cs
+*.AssemblyInfoInputs.cache
+*.csproj.user
+*.sln.ide
