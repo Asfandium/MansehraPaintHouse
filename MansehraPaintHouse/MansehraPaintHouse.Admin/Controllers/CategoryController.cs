@@ -16,17 +16,16 @@ namespace MansehraPaintHouse.Admin.Controllers
             _context = context;
         }
 
-
         public IActionResult Index()
         {
             var categories = _context.Categories.ToList(); // Fetch categories from the database
-            return View(categories);
+            return View("CategoryIndex", categories);
         }
 
         public IActionResult Create()
         {
             ViewBag.ParentCategories = _context.Categories.ToList(); // Pass parent categories for dropdown
-            return View();
+            return View("CategoryCreate");
         }
 
         [HttpPost]
@@ -64,7 +63,7 @@ namespace MansehraPaintHouse.Admin.Controllers
             }
 
             ViewBag.ParentCategories = _context.Categories.ToList(); // Pass parent categories for dropdown
-            return View(category);
+            return View("CategoryCreate", category); 
         }
 
         public IActionResult Edit(int id)
@@ -76,7 +75,7 @@ namespace MansehraPaintHouse.Admin.Controllers
             }
 
             ViewBag.ParentCategories = _context.Categories.ToList();
-            return View(category);
+            return View("CategoryEdit", category); 
         }
 
         [HttpPost]
@@ -109,7 +108,7 @@ namespace MansehraPaintHouse.Admin.Controllers
             }
 
             ViewBag.ParentCategories = _context.Categories.ToList();
-            return View(category);
+            return View("CategoryEdit", category); 
         }
 
         public IActionResult Delete(int id)
@@ -119,7 +118,7 @@ namespace MansehraPaintHouse.Admin.Controllers
             {
                 return NotFound();
             }
-            return View(category); // Render the Delete.cshtml view
+            return View("CategoryDelete", category);
         }
 
         [HttpPost, ActionName("Delete")]
