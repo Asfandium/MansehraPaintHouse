@@ -1,0 +1,102 @@
+@* House\MansehraPaintHouse\MansehraPaintHouse.Admin\Views\Category\Edit.cshtml -->
+@model MansehraPaintHouse.Core.Entities.Category
+
+<h2>Edit Category</h2>
+
+<form asp-action="Edit" enctype="multipart/form-data">
+    <input type="hidden" asp-for="CategoryID" />
+    <div class="form-group">
+        <label for="Name">Name</label>
+        <input type="text" class="form-control" asp-for="Name" required />
+    </div>
+    <div class="form-group">
+        <label for="ParentCategoryID">Parent Category</label>
+        <select class="form-control" asp-for="ParentCategoryID">
+            <option value="">-- None --</option>
+            @foreach (var parent in ViewBag.ParentCategories)
+            {
+                <option value="@parent.CategoryID" selected="@(parent.CategoryID == Model.ParentCategoryID)">
+                    @parent.Name
+                </option>
+            }
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="Image1File">Image 1</label>
+        <input type="file" class="form-control" id="Image1File" name="Image1File" />
+        @if (!string.IsNullOrEmpty(Model.Image1))
+        {
+            <img src="@Model.Image1" alt="Image 1" style="max-width: 200px;" />
+        }
+    </div>
+    <div class="form-group">
+        <label for="Image2File">Image 2</label>
+        <input type="file" class="form-control" id="Image2File" name="Image2File" />
+        @if (!string.IsNullOrEmpty(Model.Image2))
+        {
+            <img src="@Model.Image2" alt="Image 2" style="max-width: 200px;" />
+        }
+    </div>
+    <div class="form-group">
+        <label for="Description">Description</label>
+        <textarea class="form-control" asp-for="Description"></textarea>
+    </div>
+    <div class="form-group">
+        <label for="IsActive">Is Active</label>
+        <input type="checkbox" asp-for="IsActive" />
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
+</form> *@
+
+
+@model MansehraPaintHouse.Core.Entities.Category
+
+<h2>Edit Category</h2>
+
+<form asp-action="Edit" enctype="multipart/form-data">
+    <input type="hidden" asp-for="CategoryID" />
+    <input type="hidden" asp-for="IsActive" value="true" /> <!-- Always send true -->
+
+    <div class="form-group">
+        <label for="Name">Name</label>
+        <input type="text" class="form-control" asp-for="Name" required />
+    </div>
+
+    <div class="form-group">
+        <label for="ParentCategoryID">Parent Category</label>
+        <select class="form-control" asp-for="ParentCategoryID">
+            <option value="">-- None --</option>
+            @foreach (var parent in ViewBag.ParentCategories)
+            {
+                <option value="@parent.CategoryID" selected="@(parent.CategoryID == Model?.ParentCategoryID ? "selected" : null)">
+                    @parent.Name
+                </option>
+            }
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="Image1File">Image 1</label>
+        <input type="file" class="form-control" id="Image1File" name="Image1File" />
+        @if (!string.IsNullOrEmpty(Model.Image1))
+        {
+            <img src="@Model.Image1" alt="Image 1" style="max-width: 200px;" />
+        }
+    </div>
+
+    <div class="form-group">
+        <label for="Image2File">Image 2</label>
+        <input type="file" class="form-control" id="Image2File" name="Image2File" />
+        @if (!string.IsNullOrEmpty(Model.Image2))
+        {
+            <img src="@Model.Image2" alt="Image 2" style="max-width: 200px;" />
+        }
+    </div>
+
+    <div class="form-group">
+        <label for="Description">Description</label>
+        <textarea class="form-control" asp-for="Description"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+</form>

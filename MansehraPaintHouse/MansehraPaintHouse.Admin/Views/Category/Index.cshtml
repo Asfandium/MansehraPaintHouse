@@ -1,0 +1,64 @@
+@model IEnumerable<MansehraPaintHouse.Core.Entities.Category>
+
+<h1>Categories</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Parent Category</th>
+            <th>Description</th>
+            <th>Image 1</th>
+            <th>Image 2</th>
+            <th>Is Active</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var category in Model)
+        {
+            <tr>
+                <td>@category.Name</td>
+                <td>
+                    @if (category.ParentCategoryID.HasValue)
+                    {
+                        var parentCategory = Model.FirstOrDefault(c => c.CategoryID == category.ParentCategoryID);
+                        @parentCategory?.Name
+                    }
+                    else
+                    {
+                        <span>-- None --</span>
+                    }
+                </td>
+                <td>@category.Description</td>
+                <td>
+                    @if (!string.IsNullOrEmpty(category.Image1))
+                    {
+                        <img src="@category.Image1" alt="Image 1" style="max-width: 100px;" />
+                    }
+                    else
+                    {
+                        <span>No Image</span>
+                    }
+                </td>
+                <td>
+                    @if (!string.IsNullOrEmpty(category.Image2))
+                    {
+                        <img src="@category.Image2" alt="Image 2" style="max-width: 100px;" />
+                    }
+                    else
+                    {
+                        <span>No Image</span>
+                    }
+                </td>
+                <td>@(category.IsActive ? "Yes" : "No")</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@category.CategoryID">Edit</a> |
+                    <a asp-action="Delete" asp-route-id="@category.CategoryID">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-action="Create" class="btn btn-primary">Create New Category</a>

@@ -1,0 +1,33 @@
+@model MansehraPaintHouse.Core.Entities.Category
+
+<h2>Delete Category</h2>
+
+<div>
+    <h3>Are you sure you want to delete this category?</h3>
+    <div>
+        <strong>Name:</strong> @Model.Name
+    </div>
+    <div>
+        <strong>Description:</strong> @Model.Description
+    </div>
+    <div>
+        <strong>Image 1:</strong>
+        @if (!string.IsNullOrEmpty(Model.Image1))
+        {
+            <img src="@Model.Image1" alt="Image 1" style="max-width: 200px;" />
+        }
+    </div>
+    <div>
+        <strong>Image 2:</strong>
+        @if (!string.IsNullOrEmpty(Model.Image2))
+        {
+            <img src="@Model.Image2" alt="Image 2" style="max-width: 200px;" />
+        }
+    </div>
+</div>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="CategoryID" />
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
