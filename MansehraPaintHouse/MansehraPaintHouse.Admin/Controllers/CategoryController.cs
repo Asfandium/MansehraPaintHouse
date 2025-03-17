@@ -118,10 +118,12 @@ namespace MansehraPaintHouse.Admin.Controllers
             {
                 return NotFound();
             }
-            return View("CategoryDelete", category);
+
+            return View("CategoryDelete", category); // Render the confirmation view
         }
 
         [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
         {
             var category = _context.Categories.Find(id);
@@ -130,6 +132,7 @@ namespace MansehraPaintHouse.Admin.Controllers
                 category.IsActive = false; // Perform a soft delete by setting IsActive to false
                 _context.SaveChanges(); // Save changes to the database
             }
+
             return RedirectToAction("Index");
         }
 

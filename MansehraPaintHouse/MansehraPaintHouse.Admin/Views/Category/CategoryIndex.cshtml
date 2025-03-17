@@ -51,13 +51,63 @@
                         <span>No Image</span>
                     }
                 </td>
-                <td>@(category.IsActive ? "Yes" : "No")</td>
+                <td>
+                    @if (category.IsActive)
+                    {
+                        <span style="color: green; font-weight: bold;">Active</span>
+                    }
+                    else
+                    {
+                        <span style="color: red; font-weight: bold;">InActive</span>
+                    }
+                </td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@category.CategoryID" class="btn btn-success">Edit</a>
                     <form asp-action="Delete" asp-route-id="@category.CategoryID" method="post" style="display:inline;">
-                        <button type="submit" class="btn btn-danger">Delete</button>
+                        <button type="button" class="btn btn-danger" onclick="confirmDelete(@category.CategoryID)">Delete</button>
                     </form>
                 </td>
+
+                <script>
+                    function confirmDelete(categoryId) {
+                        Swal.fire({
+                            title: 'Are you sure?',
+                            text: "You won't be able to revert this!",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#d33',
+                            cancelButtonColor: '#3085d6',
+                            confirmButtonText: 'Yes, delete it!'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // Send a POST request to delete the category
+                                fetch(`/Category/Delete/${categoryId}`, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                                    }
+                                }).then(response => {
+                                    if (response.ok) {
+                                        Swal.fire(
+                                            'Deleted!',
+                                            'The category has been deleted.',
+                                            'success'
+                                        ).then(() => {
+                                            location.reload(); // Reload the page to reflect changes
+                                        });
+                                    } else {
+                                        Swal.fire(
+                                            'Error!',
+                                            'There was an issue deleting the category.',
+                                            'error'
+                                        );
+                                    }
+                                });
+                            }
+                        });
+                    }
+                </script>
             </tr>
         }
     </tbody>
