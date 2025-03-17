@@ -53,8 +53,10 @@
                 </td>
                 <td>@(category.IsActive ? "Yes" : "No")</td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@category.CategoryID">Edit</a> |
-                    <a asp-action="Delete" asp-route-id="@category.CategoryID">Delete</a>
+                    <a asp-action="Edit" asp-route-id="@category.CategoryID" class="btn btn-success">Edit</a>
+                    <form asp-action="Delete" asp-route-id="@category.CategoryID" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
                 </td>
             </tr>
         }
