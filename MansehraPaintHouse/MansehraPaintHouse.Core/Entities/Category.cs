@@ -19,7 +19,7 @@ namespace MansehraPaintHouse.Core.Entities
         [StringLength(255, ErrorMessage = "Image2 path cannot be longer than 255 characters")]
         public string? Image2 { get; set; }
         
-        public string Description { get; set; }
+        public string? Description { get; set; }
         
         public bool IsActive { get; set; } = true;
     }
