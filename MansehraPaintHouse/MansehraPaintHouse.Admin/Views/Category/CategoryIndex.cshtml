@@ -62,7 +62,7 @@
                     }
                 </td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@category.CategoryID" class="btn btn-success">Edit</a>
+                    <a asp-action="Upsert" asp-route-id="@category.CategoryID" class="btn btn-success">Edit</a>
                     <form asp-action="Delete" asp-route-id="@category.CategoryID" method="post" style="display:inline;">
                         <button type="button" class="btn btn-danger" onclick="confirmDelete(@category.CategoryID)">Delete</button>
                     </form>
@@ -113,4 +113,4 @@
     </tbody>
 </table>
 
-<a asp-action="Create" class="btn btn-primary">Create New Category</a>
+<a asp-action="Upsert" class="btn btn-primary">Create New Category</a>
