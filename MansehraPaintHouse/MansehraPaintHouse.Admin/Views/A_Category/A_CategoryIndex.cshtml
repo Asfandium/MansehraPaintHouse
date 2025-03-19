@@ -62,13 +62,14 @@
                     }
                 </td>
                 <td>
-                    <a asp-action="Upsert" asp-route-id="@category.CategoryID" class="btn btn-success">Edit</a>
-                    <form asp-action="Delete" asp-route-id="@category.CategoryID" method="post" style="display:inline;">
+                    <a asp-action="A_CategoryUpsert" asp-controller="A_Category" asp-route-id="@category.CategoryID" class="btn btn-success">Edit</a>
+                    <form id="delete-form-@category.CategoryID" asp-action="Delete" asp-controller="A_Category" asp-route-id="@category.CategoryID" method="post" style="display:inline;">
+                        @Html.AntiForgeryToken()
                         <button type="button" class="btn btn-danger" onclick="confirmDelete(@category.CategoryID)">Delete</button>
                     </form>
                 </td>
-
                 <script>
+
                     function confirmDelete(categoryId) {
                         Swal.fire({
                             title: 'Are you sure?',
@@ -80,18 +81,16 @@
                             confirmButtonText: 'Yes, delete it!'
                         }).then((result) => {
                             if (result.isConfirmed) {
-                                // Send a POST request to delete the category
-                                fetch(`/Category/Delete/${categoryId}`, {
+                                fetch(`/A_Category/Delete/${categoryId}`, {
                                     method: 'POST',
                                     headers: {
-                                        'Content-Type': 'application/json',
-                                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
                                     }
                                 }).then(response => {
                                     if (response.ok) {
                                         Swal.fire(
                                             'Deleted!',
-                                            'The category has been deleted.',
+                                            'The category has been deleted successfully.',
                                             'success'
                                         ).then(() => {
                                             location.reload(); // Reload the page to reflect changes
@@ -99,18 +98,25 @@
                                     } else {
                                         Swal.fire(
                                             'Error!',
-                                            'There was an issue deleting the category.',
+                                            'There was an issue deleting the category. Please try again.',
                                             'error'
                                         );
                                     }
+                                }).catch(error => {
+                                    Swal.fire(
+                                        'Error!',
+                                        'An unexpected error occurred. Please try again later.',
+                                        'error'
+                                    );
                                 });
                             }
                         });
                     }
+                
                 </script>
             </tr>
         }
     </tbody>
 </table>
 
-<a asp-action="Upsert" class="btn btn-primary">Create New Category</a>
+<a asp-action="A_CategoryUpsert" asp-controller="A_Category" class="btn btn-primary">Create New Category</a>
