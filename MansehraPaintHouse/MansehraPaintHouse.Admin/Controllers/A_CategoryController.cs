@@ -94,17 +94,93 @@ namespace MansehraPaintHouse.Admin.Controllers
             return $"/images/{imageFile.FileName}";
         }
 
-        [HttpPost, ActionName("Delete")]
+        //[HttpPost, ActionName("Delete")]
+        //[ValidateAntiForgeryToken]
+        //public IActionResult Delete(int id)
+        //{
+        //    var category = _context.Categories.Find(id);
+        //    if (category != null)
+        //    {
+        //        category.IsActive = false; // Perform a soft delete by setting IsActive to false
+        //        _context.SaveChanges(); // Save changes to the database
+        //    }
+        //    return RedirectToAction("A_CategoryIndex");
+        //}
+
+
+
+
+
+
+
+        //Method to activate category
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> ToggleStatus(int id)
         {
-            var category = _context.Categories.Find(id);
-            if (category != null)
+            try
             {
-                category.IsActive = false; // Perform a soft delete by setting IsActive to false
-                _context.SaveChanges(); // Save changes to the database
+                var category = await _context.Categories.FindAsync(id);
+                if (category == null)
+                {
+                    return NotFound();
+                }
+
+                category.IsActive = !category.IsActive;
+                await _context.SaveChangesAsync();
+
+                return Ok();
             }
-            return RedirectToAction("A_CategoryIndex");
+            catch
+            {
+                return StatusCode(500);
+            }
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> ToggleStatus(int id)
+        //{
+        //    try
+        //    {
+        //        var category = await _context.Categories.FindAsync(id);
+
+        //        if (category == null)
+        //        {
+        //            return NotFound();
+        //        }
+
+        //        // Toggle the IsActive status
+        //        category.IsActive = !category.IsActive;
+
+        //        // Update the ModifiedDate if you have one
+        //        // category.ModifiedDate = DateTime.UtcNow;
+
+        //        await _context.SaveChangesAsync();
+        //        return Ok();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        // Log the exception if you have logging configured
+        //        return StatusCode(500, "An error occurred while updating the category status.");
+        //    }
+        //}
     }
 }

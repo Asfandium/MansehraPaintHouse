@@ -1,6 +1,7 @@
 @model IEnumerable<MansehraPaintHouse.Core.Entities.Category>
 
 <div class="card">
+    @Html.AntiForgeryToken()
     <div class="card-header">
         <h3 class="card-title">Categories</h3>
     </div>
@@ -30,6 +31,7 @@
                     <th>Description</th>
                     <th>Images</th>
                     <th>Status</th>
+                    <th>Actions</th>
                     <th></th>
                 </tr>
             </thead>
@@ -69,7 +71,7 @@
                             }
                             else
                             {
-                                <span class="badge bg-danger me-1">Inactive</span>
+                                <span class="badge bg-danger me-1">InActive</span>
                             }
                         </td>
                         <td class="text-end">
@@ -77,11 +79,21 @@
                                 <a asp-action="A_CategoryUpsert" asp-controller="A_Category" asp-route-id="@category.CategoryID" class="btn btn-primary btn-sm">
                                     Edit
                                 </a>
-                                <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete(@category.CategoryID)">
-                                    Delete
-                                </button>
+                                @if (category.IsActive)
+                                {
+                                    <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete(@category.CategoryID)">
+                                        Delete
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button type="button" class="btn btn-success btn-sm" onclick="confirmDelete(@category.CategoryID)">
+                                        Activate
+                                    </button>
+                                }
                             </div>
                         </td>
+
                     </tr>
                 }
             </tbody>
@@ -119,44 +131,49 @@
 @section Scripts {
     <script>
         //delete sweet alert
-        function confirmDelete(categoryId) {
+             function confirmDelete(categoryId) {
+            // Get the status of the category from the row
+            const row = document.querySelector(`button[onclick="confirmDelete(${categoryId})"]`).closest('tr');
+            const isActive = row.querySelector('.badge').textContent.trim() === 'Active';
+
             Swal.fire({
-                title: 'Are you sure?',
-                text: "You won't be able to revert this!",
-                icon: 'warning',
+                title: isActive ? 'Are you sure?' : 'Activate Category?',
+                text: isActive ? "You won't be able to revert this!" : "Do you want to activate this category?",
+                icon: isActive ? 'warning' : 'question',
                 showCancelButton: true,
-                confirmButtonColor: '#d33',
+                confirmButtonColor: isActive ? '#d33' : '#28a745',
                 cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Yes, delete it!'
+                confirmButtonText: isActive ? 'Yes, deactivate it!' : 'Yes, activate it!'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    fetch(`/A_Category/Delete/${categoryId}`, {
+                    const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+                    fetch(`/A_Category/ToggleStatus/${categoryId}`, {
                         method: 'POST',
                         headers: {
-                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                            'Content-Type': 'application/json',
+                            'RequestVerificationToken': token
                         }
                     }).then(response => {
                         if (response.ok) {
-                            Swal.fire(
-                                'Deleted!',
-                                'The category has been deleted successfully.',
-                                'success'
-                            ).then(() => {
-                                location.reload();
+                            Swal.fire({
+                                title: isActive ? 'Deactivated!' : 'Activated!',
+                                text: isActive ? 'The category has been deactivated successfully.' : 'The category has been activated successfully.',
+                                icon: 'success',
+                                confirmButtonColor: '#28a745'
+                            }).then(() => {
+                                window.location.reload();
                             });
                         } else {
-                            Swal.fire(
-                                'Error!',
-                                'There was an issue deleting the category. Please try again.',
-                                'error'
-                            );
+                            throw new Error('Network response was not ok');
                         }
                     }).catch(error => {
-                        Swal.fire(
-                            'Error!',
-                            'An unexpected error occurred. Please try again later.',
-                            'error'
-                        );
+                        Swal.fire({
+                            title: 'Error!',
+                            text: `There was an issue ${isActive ? 'deactivating' : 'activating'} the category. Please try again.`,
+                            icon: 'error',
+                            confirmButtonColor: '#d33'
+                        });
                     });
                 }
             });
