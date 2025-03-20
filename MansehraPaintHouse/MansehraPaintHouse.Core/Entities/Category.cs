@@ -22,5 +22,8 @@ namespace MansehraPaintHouse.Core.Entities
         public string? Description { get; set; }
         
         public bool IsActive { get; set; } = true;
+
+        // Navigation property
+        public Category? ParentCategory { get; set; }
     }
 } 

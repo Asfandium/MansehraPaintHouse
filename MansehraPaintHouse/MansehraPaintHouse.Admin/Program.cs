@@ -1,4 +1,6 @@
+using MansehraPaintHouse.Core.Interfaces;
 using MansehraPaintHouse.Infrastructure.Data;
+using MansehraPaintHouse.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,6 +11,13 @@ builder.Services.AddControllersWithViews();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
+
+// Register repositories
+builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+
+// Register services
+builder.Services.AddScoped<ICategoryService, CategoryService>();
 
 var app = builder.Build();
 

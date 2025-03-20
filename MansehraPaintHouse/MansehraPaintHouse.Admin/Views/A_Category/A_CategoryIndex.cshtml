@@ -10,7 +10,6 @@
             <div class="text-muted">
                 Show
                 <div class="mx-2 d-inline-block">
-                   @*  <input type="text" class="form-control form-control-sm" value="8" size="3" aria-label="Categories count"> *@
                     <input type="text"
                            class="form-control form-control-sm"
                            value="@Model.PageSize"
@@ -255,29 +254,14 @@
             }
         }
 
-
         // Pagination code
+
         document.getElementById('pageSizeInput').addEventListener('change', function() {
             const pageSize = parseInt(this.value) || 8;
             if (pageSize > 0) {
                 window.location.href = '@Url.Action("A_CategoryIndex")?pageSize=' + pageSize + '&pageNumber=1';
             }
         });
-
-
-
-
-
-
-
-
-
-
-        // document.querySelector('input[aria-label="Categories count"]').addEventListener('change', function() {
-        //     const pageSize = parseInt(this.value) || 8;
-        //     window.location.href = `@Url.Action("A_CategoryIndex")?pageSize=${pageSize}&pageNumber=1`;
-        // });
-
 
     </script>
 }

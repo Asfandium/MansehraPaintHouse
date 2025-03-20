@@ -10,5 +10,16 @@ namespace MansehraPaintHouse.Infrastructure.Data
         }
 
         public DbSet<Category> Categories { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Category>()
+                .HasOne(c => c.ParentCategory)
+                .WithMany()
+                .HasForeignKey(c => c.ParentCategoryID)
+                .OnDelete(DeleteBehavior.Restrict);
+        }
     }
 }

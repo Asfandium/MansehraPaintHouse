@@ -1,20 +1,33 @@
 using Microsoft.AspNetCore.Mvc;
 using MansehraPaintHouse.Core.Entities;
-using MansehraPaintHouse.Infrastructure.Data;
+using MansehraPaintHouse.Core.Interfaces;
 using Microsoft.AspNetCore.Http;
 using System.IO;
-using Microsoft.EntityFrameworkCore;
 
 namespace MansehraPaintHouse.Admin.Controllers
 {
     public class A_CategoryController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ICategoryService _categoryService;
 
-        public A_CategoryController(ApplicationDbContext context)
+        public A_CategoryController(ICategoryService categoryService)
         {
-            _context = context;
+            _categoryService = categoryService;
         }
+
+        //public async Task<IActionResult> A_CategoryIndex(int? pageNumber, int? pageSize)
+        //{
+        //    int defaultPageSize = 8;  // Default items per page
+        //    int currentPageNumber = pageNumber ?? 1;
+        //    int currentPageSize = pageSize ?? defaultPageSize;
+
+        //    var categories = await _categoryService.GetAllCategoriesAsync();
+        //    var query = categories.OrderByDescending(c => c.CategoryID);
+        //    var paginatedCategories = await PaginatedList<Category>.CreateAsync(query, currentPageNumber, currentPageSize);
+
+        //    return View(paginatedCategories);
+        //}
+
 
         public async Task<IActionResult> A_CategoryIndex(int? pageNumber, int? pageSize)
         {
@@ -22,32 +35,31 @@ namespace MansehraPaintHouse.Admin.Controllers
             int currentPageNumber = pageNumber ?? 1;
             int currentPageSize = pageSize ?? defaultPageSize;
 
-            var query = _context.Categories
-                .OrderByDescending(c => c.CategoryID)
-                .AsNoTracking();
+            var query = await _categoryService.GetAllCategoriesQueryableAsync();
+            query = query.OrderByDescending(c => c.CategoryID);
+            var paginatedCategories = await PaginatedList<Category>.CreateAsync(query, currentPageNumber, currentPageSize);
 
-            var categories = await PaginatedList<Category>.CreateAsync(query, currentPageNumber, currentPageSize);
-            return View(categories);
+            return View(paginatedCategories);
         }
 
-        public IActionResult A_CategoryUpsert(int? id)
+        public async Task<IActionResult> A_CategoryUpsert(int? id)
         {
             var category = id == null || id == 0
                 ? new Category()
-                : _context.Categories.Find(id);
+                : await _categoryService.GetCategoryByIdAsync(id.Value);
 
             if (category == null)
             {
                 return NotFound();
             }
 
-            ViewBag.ParentCategories = _context.Categories.ToList();
+            ViewBag.ParentCategories = await _categoryService.GetAllCategoriesAsync();
             return View(category);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult A_CategoryUpsert(Category category, IFormFile? Image1File, IFormFile? Image2File)
+        public async Task<IActionResult> A_CategoryUpsert(Category category, IFormFile? Image1File, IFormFile? Image2File)
         {
             if (ModelState.IsValid)
             {
@@ -63,11 +75,11 @@ namespace MansehraPaintHouse.Admin.Controllers
 
                 if (category.CategoryID == 0)
                 {
-                    _context.Categories.Add(category);
+                    await _categoryService.CreateCategoryAsync(category);
                 }
                 else
                 {
-                    var existingCategory = _context.Categories.Find(category.CategoryID);
+                    var existingCategory = await _categoryService.GetCategoryByIdAsync(category.CategoryID);
                     if (existingCategory != null)
                     {
                         existingCategory.Name = category.Name;
@@ -76,14 +88,14 @@ namespace MansehraPaintHouse.Admin.Controllers
                         existingCategory.IsActive = category.IsActive;
                         existingCategory.Image1 = category.Image1 ?? existingCategory.Image1;
                         existingCategory.Image2 = category.Image2 ?? existingCategory.Image2;
+                        await _categoryService.UpdateCategoryAsync(existingCategory);
                     }
                 }
 
-                _context.SaveChanges();
                 return RedirectToAction("A_CategoryIndex");
             }
 
-            ViewBag.ParentCategories = _context.Categories.ToList();
+            ViewBag.ParentCategories = await _categoryService.GetAllCategoriesAsync();
             return View(category);
         }
 
@@ -103,22 +115,13 @@ namespace MansehraPaintHouse.Admin.Controllers
             return $"/images/{imageFile.FileName}";
         }
 
-        //Method to activate category
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ToggleStatus(int id)
         {
             try
             {
-                var category = await _context.Categories.FindAsync(id);
-                if (category == null)
-                {
-                    return NotFound();
-                }
-
-                category.IsActive = !category.IsActive;
-                await _context.SaveChangesAsync();
-
+                await _categoryService.ToggleCategoryStatusAsync(id);
                 return Ok();
             }
             catch
@@ -126,51 +129,5 @@ namespace MansehraPaintHouse.Admin.Controllers
                 return StatusCode(500);
             }
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> ToggleStatus(int id)
-        //{
-        //    try
-        //    {
-        //        var category = await _context.Categories.FindAsync(id);
-
-        //        if (category == null)
-        //        {
-        //            return NotFound();
-        //        }
-
-        //        // Toggle the IsActive status
-        //        category.IsActive = !category.IsActive;
-
-        //        // Update the ModifiedDate if you have one
-        //        // category.ModifiedDate = DateTime.UtcNow;
-
-        //        await _context.SaveChangesAsync();
-        //        return Ok();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        // Log the exception if you have logging configured
-        //        return StatusCode(500, "An error occurred while updating the category status.");
-        //    }
-        //}
     }
 }
