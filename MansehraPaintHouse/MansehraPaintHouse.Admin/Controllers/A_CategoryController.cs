@@ -3,6 +3,7 @@ using MansehraPaintHouse.Core.Entities;
 using MansehraPaintHouse.Infrastructure.Data;
 using Microsoft.AspNetCore.Http;
 using System.IO;
+using Microsoft.EntityFrameworkCore;
 
 namespace MansehraPaintHouse.Admin.Controllers
 {
@@ -15,9 +16,17 @@ namespace MansehraPaintHouse.Admin.Controllers
             _context = context;
         }
 
-        public IActionResult A_CategoryIndex()
+        public async Task<IActionResult> A_CategoryIndex(int? pageNumber, int? pageSize)
         {
-            var categories = _context.Categories.ToList();
+            int defaultPageSize = 8;  // Default items per page
+            int currentPageNumber = pageNumber ?? 1;
+            int currentPageSize = pageSize ?? defaultPageSize;
+
+            var query = _context.Categories
+                .OrderByDescending(c => c.CategoryID)
+                .AsNoTracking();
+
+            var categories = await PaginatedList<Category>.CreateAsync(query, currentPageNumber, currentPageSize);
             return View(categories);
         }
 
@@ -93,25 +102,6 @@ namespace MansehraPaintHouse.Admin.Controllers
             }
             return $"/images/{imageFile.FileName}";
         }
-
-        //[HttpPost, ActionName("Delete")]
-        //[ValidateAntiForgeryToken]
-        //public IActionResult Delete(int id)
-        //{
-        //    var category = _context.Categories.Find(id);
-        //    if (category != null)
-        //    {
-        //        category.IsActive = false; // Perform a soft delete by setting IsActive to false
-        //        _context.SaveChanges(); // Save changes to the database
-        //    }
-        //    return RedirectToAction("A_CategoryIndex");
-        //}
-
-
-
-
-
-
 
         //Method to activate category
         [HttpPost]

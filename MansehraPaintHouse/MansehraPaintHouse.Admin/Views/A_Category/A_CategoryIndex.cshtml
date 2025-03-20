@@ -1,4 +1,4 @@
-@model IEnumerable<MansehraPaintHouse.Core.Entities.Category>
+@model PaginatedList<MansehraPaintHouse.Core.Entities.Category>
 
 <div class="card">
     @Html.AntiForgeryToken()
@@ -10,7 +10,13 @@
             <div class="text-muted">
                 Show
                 <div class="mx-2 d-inline-block">
-                    <input type="text" class="form-control form-control-sm" value="8" size="3" aria-label="Categories count">
+                   @*  <input type="text" class="form-control form-control-sm" value="8" size="3" aria-label="Categories count"> *@
+                    <input type="text"
+                           class="form-control form-control-sm"
+                           value="@Model.PageSize"
+                           size="3"
+                           id="pageSizeInput"
+                           aria-label="Categories count">
                 </div>
                 entries
             </div>
@@ -100,21 +106,41 @@
         </table>
     </div>
     <div class="card-footer d-flex align-items-center">
-        <p class="m-0 text-muted">Showing <span>1</span> to <span>8</span> of <span>@Model.Count()</span> entries</p>
+        <p class="m-0 text-muted">
+            Showing <span>@((Model.PageIndex - 1) * Model.PageSize + 1)</span>
+            to <span>@Math.Min(Model.PageIndex * Model.PageSize, Model.TotalItems)</span>
+            of <span>@Model.TotalItems</span> entries
+        </p>
         <ul class="pagination m-0 ms-auto">
-            <li class="page-item disabled">
-                <a class="page-link" href="#" tabindex="-1" aria-disabled="true">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M15 6l-6 6l6 6" /></svg>
+            <li class="page-item @(!Model.HasPreviousPage ? "disabled" : "")">
+                <a class="page-link"
+                   asp-action="A_CategoryIndex"
+                   asp-route-pageNumber="@(Model.PageIndex - 1)"
+                   asp-route-pageSize="@Model.PageSize"
+                   tabindex="-1"
+                   aria-disabled="@(!Model.HasPreviousPage)">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M15 6l-6 6l6 6" /></svg>
                     prev
                 </a>
             </li>
-            <li class="page-item active"><a class="page-link" href="#">1</a></li>
-            <li class="page-item"><a class="page-link" href="#">2</a></li>
-            <li class="page-item"><a class="page-link" href="#">3</a></li>
-            <li class="page-item">
-                <a class="page-link" href="#">
+
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                <li class="page-item @(i == Model.PageIndex ? "active" : "")">
+                    <a class="page-link"
+                       asp-action="A_CategoryIndex"
+                       asp-route-pageNumber="@i"
+                       asp-route-pageSize="@Model.PageSize">@i</a>
+                </li>
+            }
+
+            <li class="page-item @(!Model.HasNextPage ? "disabled" : "")">
+                <a class="page-link"
+                   asp-action="A_CategoryIndex"
+                   asp-route-pageNumber="@(Model.PageIndex + 1)"
+                   asp-route-pageSize="@Model.PageSize">
                     next
-                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 6l6 6l-6 6" /></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M9 6l6 6l-6 6" /></svg>
                 </a>
             </li>
         </ul>
@@ -228,6 +254,29 @@
                 infoText.innerHTML = `Showing <span>${visibleRows}</span> filtered entries (from <span>${totalRows}</span> total entries)`;
             }
         }
+
+
+        // Pagination code
+        document.getElementById('pageSizeInput').addEventListener('change', function() {
+            const pageSize = parseInt(this.value) || 8;
+            if (pageSize > 0) {
+                window.location.href = '@Url.Action("A_CategoryIndex")?pageSize=' + pageSize + '&pageNumber=1';
+            }
+        });
+
+
+
+
+
+
+
+
+
+
+        // document.querySelector('input[aria-label="Categories count"]').addEventListener('change', function() {
+        //     const pageSize = parseInt(this.value) || 8;
+        //     window.location.href = `@Url.Action("A_CategoryIndex")?pageSize=${pageSize}&pageNumber=1`;
+        // });
 
 
     </script>
