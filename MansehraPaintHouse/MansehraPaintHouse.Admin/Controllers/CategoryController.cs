@@ -6,16 +6,16 @@ using System.IO;
 
 namespace MansehraPaintHouse.Admin.Controllers
 {
-    public class A_CategoryController : Controller
+    public class CategoryController : Controller
     {
         private readonly ICategoryService _categoryService;
 
-        public A_CategoryController(ICategoryService categoryService)
+        public CategoryController(ICategoryService categoryService)
         {
             _categoryService = categoryService;
         }
 
-        public async Task<IActionResult> A_CategoryIndex(int? pageNumber, int? pageSize, string searchTerm)
+        public async Task<IActionResult> CategoryIndex(int? pageNumber, int? pageSize, string searchTerm)
         {
             int defaultPageSize = 8;  // Default items per page
             int currentPageNumber = pageNumber ?? 1;
@@ -38,7 +38,7 @@ namespace MansehraPaintHouse.Admin.Controllers
             return View(paginatedCategories);
         }
 
-        public async Task<IActionResult> A_CategoryUpsert(int? id)
+        public async Task<IActionResult> CategoryUpsert(int? id)
         {
             var category = id == null || id == 0
                 ? new Category()
@@ -55,7 +55,7 @@ namespace MansehraPaintHouse.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> A_CategoryUpsert(Category category, IFormFile? Image1File, IFormFile? Image2File)
+        public async Task<IActionResult> CategoryUpsert(Category category, IFormFile? Image1File, IFormFile? Image2File)
         {
             if (ModelState.IsValid)
             {
@@ -88,7 +88,7 @@ namespace MansehraPaintHouse.Admin.Controllers
                     }
                 }
 
-                return RedirectToAction("A_CategoryIndex");
+                return RedirectToAction("CategoryIndex");
             }
 
             ViewBag.ParentCategories = await _categoryService.GetAllCategoriesAsync();

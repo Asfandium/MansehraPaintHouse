@@ -2,7 +2,7 @@
 
 <h2>@((Model.CategoryID == 0) ? "Create Category" : "Edit Category")</h2>
 
-<form asp-action="A_CategoryUpsert" enctype="multipart/form-data">
+<form asp-action="CategoryUpsert" enctype="multipart/form-data">
     <input type="hidden" asp-for="CategoryID" />
     <input type="hidden" asp-for="IsActive" value="true" /> <!-- Always send true -->
 
