@@ -1,8 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using MansehraPaintHouse.Core.Entities;
-using MansehraPaintHouse.Core.Interfaces;
+using MansehraPaintHouse.Core.Interfaces.IRepositories;
+using MansehraPaintHouse.Infrastructure.Data;
 
-namespace MansehraPaintHouse.Infrastructure.Data
+namespace MansehraPaintHouse.Infrastructure.Repositories
 {
     public class CategoryRepository : GenericRepository<Category>, ICategoryRepository
     {
@@ -36,6 +37,21 @@ namespace MansehraPaintHouse.Infrastructure.Data
                 category.IsActive = !category.IsActive;
                 Update(category);
             }
+        }
+
+        public IQueryable<Category> SearchCategories(string searchTerm)
+        {
+            if (string.IsNullOrWhiteSpace(searchTerm))
+            {
+                return _dbSet.AsQueryable();
+            }
+
+            searchTerm = searchTerm.ToLower();
+            return _dbSet.Where(c => 
+                c.Name.ToLower().Contains(searchTerm) ||
+                c.Description.ToLower().Contains(searchTerm) ||
+                (c.ParentCategory != null && c.ParentCategory.Name.ToLower().Contains(searchTerm))
+            );
         }
     }
 } 

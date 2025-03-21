@@ -1,11 +1,10 @@
 using MansehraPaintHouse.Core.Entities;
 
-namespace MansehraPaintHouse.Core.Interfaces
+namespace MansehraPaintHouse.Core.Interfaces.IServices
 {
     public interface ICategoryService
     {
         Task<Category> GetCategoryByIdAsync(int id);
-        //Task<IEnumerable<Category>> GetAllCategoriesAsync();
         Task<IQueryable<Category>> GetAllCategoriesQueryableAsync();
         Task<IEnumerable<Category>> GetActiveCategoriesAsync();
         Task<Category> CreateCategoryAsync(Category category);
@@ -14,6 +13,6 @@ namespace MansehraPaintHouse.Core.Interfaces
         Task ToggleCategoryStatusAsync(int id);
         Task<Category> GetCategoryWithParentAsync(int id);
         Task<IEnumerable<Category>> GetAllCategoriesAsync();
-
+        Task<IQueryable<Category>> SearchCategoriesAsync(string searchTerm);
     }
 } 

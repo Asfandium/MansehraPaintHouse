@@ -1,6 +1,8 @@
-using MansehraPaintHouse.Core.Interfaces;
 using MansehraPaintHouse.Infrastructure.Data;
+using MansehraPaintHouse.Core.Interfaces.IRepositories;
+using MansehraPaintHouse.Infrastructure.Repositories;
 using MansehraPaintHouse.Infrastructure.Services;
+using MansehraPaintHouse.Core.Interfaces.IServices;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);

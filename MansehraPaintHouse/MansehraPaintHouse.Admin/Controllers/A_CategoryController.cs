@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using MansehraPaintHouse.Core.Entities;
-using MansehraPaintHouse.Core.Interfaces;
+using MansehraPaintHouse.Core.Interfaces.IServices;
 using Microsoft.AspNetCore.Http;
 using System.IO;
 
@@ -15,30 +15,26 @@ namespace MansehraPaintHouse.Admin.Controllers
             _categoryService = categoryService;
         }
 
-        //public async Task<IActionResult> A_CategoryIndex(int? pageNumber, int? pageSize)
-        //{
-        //    int defaultPageSize = 8;  // Default items per page
-        //    int currentPageNumber = pageNumber ?? 1;
-        //    int currentPageSize = pageSize ?? defaultPageSize;
-
-        //    var categories = await _categoryService.GetAllCategoriesAsync();
-        //    var query = categories.OrderByDescending(c => c.CategoryID);
-        //    var paginatedCategories = await PaginatedList<Category>.CreateAsync(query, currentPageNumber, currentPageSize);
-
-        //    return View(paginatedCategories);
-        //}
-
-
-        public async Task<IActionResult> A_CategoryIndex(int? pageNumber, int? pageSize)
+        public async Task<IActionResult> A_CategoryIndex(int? pageNumber, int? pageSize, string searchTerm)
         {
             int defaultPageSize = 8;  // Default items per page
             int currentPageNumber = pageNumber ?? 1;
             int currentPageSize = pageSize ?? defaultPageSize;
 
-            var query = await _categoryService.GetAllCategoriesQueryableAsync();
+            IQueryable<Category> query;
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                query = await _categoryService.SearchCategoriesAsync(searchTerm);
+            }
+            else
+            {
+                query = await _categoryService.GetAllCategoriesQueryableAsync();
+            }
+
             query = query.OrderByDescending(c => c.CategoryID);
             var paginatedCategories = await PaginatedList<Category>.CreateAsync(query, currentPageNumber, currentPageSize);
-
+            
+            ViewBag.SearchTerm = searchTerm;
             return View(paginatedCategories);
         }
 

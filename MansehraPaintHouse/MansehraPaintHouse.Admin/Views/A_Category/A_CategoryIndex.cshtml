@@ -20,10 +20,19 @@
                 entries
             </div>
             <div class="ms-auto text-muted">
-                Search:
-                <div class="ms-2 d-inline-block">
-                    <input type="text" class="form-control form-control-sm" id="searchInput" aria-label="Search category">
-                </div>
+                <form asp-action="A_CategoryIndex" method="get" class="d-flex align-items-center">
+                    <input type="hidden" name="pageSize" value="@Model.PageSize" />
+                    <input type="hidden" name="pageNumber" value="1" />
+                    Search:
+                    <div class="ms-2 d-inline-block">
+                        <input type="text" 
+                               class="form-control form-control-sm" 
+                               name="searchTerm" 
+                               value="@ViewBag.SearchTerm"
+                               aria-label="Search category">
+                    </div>
+                    <button type="submit" class="btn btn-sm btn-primary ms-2">Search</button>
+                </form>
             </div>
         </div>
     </div>
@@ -98,7 +107,6 @@
                                 }
                             </div>
                         </td>
-
                     </tr>
                 }
             </tbody>
@@ -116,6 +124,7 @@
                    asp-action="A_CategoryIndex"
                    asp-route-pageNumber="@(Model.PageIndex - 1)"
                    asp-route-pageSize="@Model.PageSize"
+                   asp-route-searchTerm="@ViewBag.SearchTerm"
                    tabindex="-1"
                    aria-disabled="@(!Model.HasPreviousPage)">
                     <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M15 6l-6 6l6 6" /></svg>
@@ -129,7 +138,8 @@
                     <a class="page-link"
                        asp-action="A_CategoryIndex"
                        asp-route-pageNumber="@i"
-                       asp-route-pageSize="@Model.PageSize">@i</a>
+                       asp-route-pageSize="@Model.PageSize"
+                       asp-route-searchTerm="@ViewBag.SearchTerm">@i</a>
                 </li>
             }
 
@@ -137,7 +147,8 @@
                 <a class="page-link"
                    asp-action="A_CategoryIndex"
                    asp-route-pageNumber="@(Model.PageIndex + 1)"
-                   asp-route-pageSize="@Model.PageSize">
+                   asp-route-pageSize="@Model.PageSize"
+                   asp-route-searchTerm="@ViewBag.SearchTerm">
                     next
                     <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M9 6l6 6l-6 6" /></svg>
                 </a>
@@ -156,7 +167,7 @@
 @section Scripts {
     <script>
         //delete sweet alert
-             function confirmDelete(categoryId) {
+        function confirmDelete(categoryId) {
             // Get the status of the category from the row
             const row = document.querySelector(`button[onclick="confirmDelete(${categoryId})"]`).closest('tr');
             const isActive = row.querySelector('.badge').textContent.trim() === 'Active';
@@ -204,64 +215,13 @@
             });
         }
 
-        //SearchBar Functionality
-
-        document.addEventListener('DOMContentLoaded', function() {
-            const searchInput = document.getElementById('searchInput');
-
-            searchInput.addEventListener('keyup', function() {
-                const searchText = this.value.toLowerCase();
-                const tableRows = document.querySelectorAll('.datatable tbody tr');
-
-                tableRows.forEach(row => {
-                    let text = '';
-                    // Get text from Name, Parent Category, Description, and Status columns
-                    const cells = row.getElementsByTagName('td');
-
-                    // Name
-                    text += cells[0].textContent.toLowerCase() + ' ';
-
-                    // Parent Category
-                    text += cells[1].textContent.toLowerCase() + ' ';
-
-                    // Description
-                    text += cells[2].textContent.toLowerCase() + ' ';
-
-                    // Status (Active/Inactive)
-                    text += cells[4].textContent.toLowerCase() + ' ';
-
-                    // Show/hide rows based on search
-                    if (text.includes(searchText)) {
-                        row.style.display = '';
-                    } else {
-                        row.style.display = 'none';
-                    }
-                });
-
-                updateEntriesInfo();
-            });
-        });
-
-        function updateEntriesInfo() {
-            const totalRows = document.querySelectorAll('.datatable tbody tr').length;
-            const visibleRows = document.querySelectorAll('.datatable tbody tr:not([style*="display: none"])').length;
-            const infoText = document.querySelector('.card-footer p.text-muted');
-
-            if (visibleRows === totalRows) {
-                infoText.innerHTML = `Showing <span>1</span> to <span>${totalRows}</span> of <span>${totalRows}</span> entries`;
-            } else {
-                infoText.innerHTML = `Showing <span>${visibleRows}</span> filtered entries (from <span>${totalRows}</span> total entries)`;
-            }
-        }
-
         // Pagination code
-
         document.getElementById('pageSizeInput').addEventListener('change', function() {
             const pageSize = parseInt(this.value) || 8;
             if (pageSize > 0) {
-                window.location.href = '@Url.Action("A_CategoryIndex")?pageSize=' + pageSize + '&pageNumber=1';
+                const searchTerm = document.querySelector('input[name="searchTerm"]').value;
+                window.location.href = '@Url.Action("A_CategoryIndex")?pageSize=' + pageSize + '&pageNumber=1&searchTerm=' + encodeURIComponent(searchTerm);
             }
         });
-
     </script>
 }

@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
 
-namespace MansehraPaintHouse.Core.Interfaces
+namespace MansehraPaintHouse.Core.Interfaces.IRepositories
 {
     public interface IGenericRepository<T> where T : class
     {

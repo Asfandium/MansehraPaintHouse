@@ -1,5 +1,6 @@
 using MansehraPaintHouse.Core.Entities;
-using MansehraPaintHouse.Core.Interfaces;
+using MansehraPaintHouse.Core.Interfaces.IServices;
+using MansehraPaintHouse.Core.Interfaces.IRepositories;
 
 namespace MansehraPaintHouse.Infrastructure.Services
 {
@@ -65,6 +66,11 @@ namespace MansehraPaintHouse.Infrastructure.Services
         public async Task<Category> GetCategoryWithParentAsync(int id)
         {
             return await _categoryRepository.GetCategoryWithParentAsync(id);
+        }
+
+        public async Task<IQueryable<Category>> SearchCategoriesAsync(string searchTerm)
+        {
+            return _categoryRepository.SearchCategories(searchTerm);
         }
     }
 } 

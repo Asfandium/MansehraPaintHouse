@@ -1,8 +1,9 @@
 using Microsoft.EntityFrameworkCore;
-using MansehraPaintHouse.Core.Interfaces;
+using MansehraPaintHouse.Core.Interfaces.IRepositories;
 using System.Linq.Expressions;
+using MansehraPaintHouse.Infrastructure.Data;
 
-namespace MansehraPaintHouse.Infrastructure.Data
+namespace MansehraPaintHouse.Infrastructure.Repositories
 {
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
@@ -47,10 +48,6 @@ namespace MansehraPaintHouse.Infrastructure.Data
             _dbSet.Update(entity);
             _context.SaveChanges();
         }
-        public IQueryable<T> GetQueryable()
-        {
-            return _dbSet.AsQueryable();
-        }
 
         public void Remove(T entity)
         {
@@ -62,6 +59,11 @@ namespace MansehraPaintHouse.Infrastructure.Data
         {
             _dbSet.RemoveRange(entities);
             _context.SaveChanges();
+        }
+
+        public IQueryable<T> GetQueryable()
+        {
+            return _dbSet.AsQueryable();
         }
     }
 } 
