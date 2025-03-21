@@ -22,6 +22,8 @@ namespace MansehraPaintHouse.Admin.Controllers
             int currentPageSize = pageSize ?? defaultPageSize;
 
             IQueryable<Category> query;
+
+            // Perform search on the database
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
                 query = await _categoryService.SearchCategoriesAsync(searchTerm);
@@ -31,9 +33,10 @@ namespace MansehraPaintHouse.Admin.Controllers
                 query = await _categoryService.GetAllCategoriesQueryableAsync();
             }
 
+            // Apply ordering and pagination
             query = query.OrderByDescending(c => c.CategoryID);
             var paginatedCategories = await PaginatedList<Category>.CreateAsync(query, currentPageNumber, currentPageSize);
-            
+
             ViewBag.SearchTerm = searchTerm;
             return View(paginatedCategories);
         }

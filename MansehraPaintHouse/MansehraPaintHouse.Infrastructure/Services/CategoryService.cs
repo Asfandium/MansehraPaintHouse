@@ -18,11 +18,6 @@ namespace MansehraPaintHouse.Infrastructure.Services
             return await _categoryRepository.GetByIdAsync(id);
         }
 
-        //public async Task<IEnumerable<Category>> GetAllCategoriesAsync()
-        //{
-        //    return await _categoryRepository.GetAllAsync();
-        //}
-
         public async Task<IQueryable<Category>> GetAllCategoriesQueryableAsync()
         {
             return _categoryRepository.GetQueryable();

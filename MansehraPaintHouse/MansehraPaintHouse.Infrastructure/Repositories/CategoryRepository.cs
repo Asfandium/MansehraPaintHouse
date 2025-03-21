@@ -39,19 +39,61 @@ namespace MansehraPaintHouse.Infrastructure.Repositories
             }
         }
 
-        public IQueryable<Category> SearchCategories(string searchTerm)
-        {
-            if (string.IsNullOrWhiteSpace(searchTerm))
-            {
-                return _dbSet.AsQueryable();
-            }
+        //public IQueryable<Category> SearchCategories(string searchTerm)
+        //{
+        //    if (string.IsNullOrWhiteSpace(searchTerm))
+        //    {
+        //        return _dbSet.AsQueryable();
+        //    }
 
-            searchTerm = searchTerm.ToLower();
-            return _dbSet.Where(c => 
-                c.Name.ToLower().Contains(searchTerm) ||
-                c.Description.ToLower().Contains(searchTerm) ||
-                (c.ParentCategory != null && c.ParentCategory.Name.ToLower().Contains(searchTerm))
-            );
-        }
+        //    searchTerm = searchTerm.ToLower();
+
+        //    return _dbSet.Where(c =>
+        //        // Search by Name or Description
+        //        c.Name.ToLower().Contains(searchTerm) ||
+        //        c.Description.ToLower().Contains(searchTerm) ||
+
+        //        // Search by Active status
+        //        (searchTerm == "active" && c.IsActive) ||
+        //        (searchTerm == "inactive" && !c.IsActive) ||
+
+        //        // Search by ParentCategory (null = Master Category)
+        //        (searchTerm == "master category" && c.ParentCategory == null) ||
+        //        (c.ParentCategory != null && c.ParentCategory.Name.ToLower().Contains(searchTerm))
+        //    );
+        //}
+
+
+
+
+        public IQueryable<Category> SearchCategories(string searchTerm)
+{
+    if (string.IsNullOrWhiteSpace(searchTerm))
+    {
+        return _dbSet.AsQueryable();
+    }
+
+    searchTerm = searchTerm.ToLower();
+
+    return _dbSet.Where(c =>
+        // Search by Name or Description
+        c.Name.ToLower().Contains(searchTerm) ||
+        c.Description.ToLower().Contains(searchTerm) ||
+
+        // Partial match for Active/Inactive status
+        //(c.IsActive && "active".Contains(searchTerm)) ||
+        //(!c.IsActive && "inactive".Contains(searchTerm)) ||
+
+        // Exact match for Active/Inactive status
+        (searchTerm == "active" && c.IsActive) ||
+        (searchTerm == "inactive" && !c.IsActive) ||
+
+
+
+        // Partial match for Master Category
+        (c.ParentCategory == null && "master category".Contains(searchTerm)) ||
+        (c.ParentCategory != null && c.ParentCategory.Name.ToLower().Contains(searchTerm))
+    );
+}
     }
 } 
