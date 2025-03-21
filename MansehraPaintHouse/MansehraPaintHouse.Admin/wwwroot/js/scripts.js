@@ -16,7 +16,7 @@ function confirmDelete(categoryId) {
         if (result.isConfirmed) {
             const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
 
-            fetch(`/A_Category/ToggleStatus/${categoryId}`, {
+            fetch(`/Category/ToggleStatus/${categoryId}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
