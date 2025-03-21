@@ -1,3 +1,4 @@
+
 using MansehraPaintHouse.Core.Entities;
 
 namespace MansehraPaintHouse.Core.Interfaces.IRepositories
