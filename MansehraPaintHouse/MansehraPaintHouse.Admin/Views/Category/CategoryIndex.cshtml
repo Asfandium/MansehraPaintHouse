@@ -10,14 +10,19 @@
     <div class="container-xl">
         <div class="row g-2 align-items-center">
             <div class="col">
-
                 <h2 class="page-title">
                     Categories
                 </h2>
-                <a asp-action="CategoryUpsert" asp-controller="Category" class="btn btn-primary">
+                @* <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#categoryModal" onclick="loadCategoryUpsertModal(0)">
                     <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M12 5l0 14" /><path d="M5 12l14 0" /></svg>
                     Add
-                </a>
+                </button> *@
+
+
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#categoryModal" onclick="loadCategoryUpsertModal(0)">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M12 5l0 14" /><path d="M5 12l14 0" /></svg>
+                    Add
+                </button>
                 <div class="card-body border-bottom py-3">
                     <div class="d-flex">
                         <div class="text-muted">
@@ -37,7 +42,6 @@
                                 <input type="hidden" name="pageSize" value="@Model.PageSize" />
                                 <input type="hidden" name="pageNumber" value="1" />
                                 <div class="ms-2 d-inline-block">
-                                    <span class="input-group-text">X</span>
                                     <input type="text" placeholder="Search..."
                                            class="form-control form-control-sm"
                                            name="searchTerm"
@@ -109,9 +113,9 @@
                                     </td>
                                     <td>
                                         <div class="btn-list flex-nowrap">
-                                            <a asp-action="CategoryUpsert" asp-controller="Category" asp-route-id="@category.CategoryID" class="btn btn-primary btn-sm">
+                                            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#categoryModal" onclick="loadCategoryUpsertModal(@category.CategoryID)">
                                                 Edit
-                                            </a>
+                                            </button>
                                             @if (category.IsActive)
                                             {
                                                 <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete(@category.CategoryID)">
@@ -180,3 +184,16 @@
 
     <!-- Add bottom spacing -->
     <div class="mb-1"></div>
+
+    <div class="modal modal-blur fade" id="categoryModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Category Upsert</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                </div>
+            </div>
+        </div>
+    </div>

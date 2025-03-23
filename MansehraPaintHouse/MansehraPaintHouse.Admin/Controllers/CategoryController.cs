@@ -53,7 +53,7 @@ namespace MansehraPaintHouse.Admin.Controllers
             }
 
             ViewBag.ParentCategories = await _categoryService.GetAllCategoriesAsync();
-            return View(category);
+            return PartialView("_CategoryUpsert", category);
         }
 
         [HttpPost]
@@ -64,12 +64,12 @@ namespace MansehraPaintHouse.Admin.Controllers
             {
                 if (Image1File != null)
                 {
-                    category.Image1 = SaveImage(Image1File);
+                    category.Image1 = await SaveImageAsync(Image1File);
                 }
 
                 if (Image2File != null)
                 {
-                    category.Image2 = SaveImage(Image2File);
+                    category.Image2 = await SaveImageAsync(Image2File);
                 }
 
                 if (category.CategoryID == 0)
@@ -98,7 +98,7 @@ namespace MansehraPaintHouse.Admin.Controllers
             return View(category);
         }
 
-        private string SaveImage(IFormFile imageFile)
+        private async Task<string> SaveImageAsync(IFormFile imageFile)
         {
             var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images");
             if (!Directory.Exists(uploadsFolder))
@@ -109,7 +109,7 @@ namespace MansehraPaintHouse.Admin.Controllers
             var filePath = Path.Combine(uploadsFolder, imageFile.FileName);
             using (var stream = new FileStream(filePath, FileMode.Create))
             {
-                imageFile.CopyTo(stream);
+                await imageFile.CopyToAsync(stream);
             }
             return $"/images/{imageFile.FileName}";
         }

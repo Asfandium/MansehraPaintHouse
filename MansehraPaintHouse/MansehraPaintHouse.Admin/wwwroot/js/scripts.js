@@ -80,3 +80,35 @@ document.addEventListener('DOMContentLoaded', function () {
         ]
     });
 });
+
+function loadCategoryUpsertModal(categoryId) {
+    $.ajax({
+        url: `/Category/CategoryUpsert/${categoryId}`,
+        type: 'GET',
+        success: function (data) {
+            $('#categoryModal .modal-body').html(data);
+        },
+        error: function () {
+            alert('Failed to load the category form.');
+        }
+    });
+}
+
+$(document).on('submit', '#categoryForm', function (event) {
+    event.preventDefault();
+    var formData = new FormData(this);
+    $.ajax({
+        url: $(this).attr('action'),
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function (response) {
+            $('#categoryModal').modal('hide');
+            location.reload();
+        },
+        error: function () {
+            alert('Failed to save the category.');
+        }
+    });
+});
