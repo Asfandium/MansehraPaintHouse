@@ -1,0 +1,170 @@
+USE [master]
+GO
+-- Drop existing database if it exists and create a new one
+DROP DATABASE IF EXISTS [MansehraPaintHouse]
+GO
+CREATE DATABASE MansehraPaintHouse;
+GO
+USE MansehraPaintHouse;
+GO
+-- 1️⃣ Users & Authentication
+CREATE TABLE Users (
+    UserID INT PRIMARY KEY IDENTITY(1,1),
+    FullName VARCHAR(255) NOT NULL, -- Full name of the user
+    Email VARCHAR(255) UNIQUE NOT NULL, -- Unique email for login
+    PasswordHash VARCHAR(255) NOT NULL, -- Hashed password for security
+    Role VARCHAR(50) NOT NULL CHECK (Role IN ('Admin', 'Customer', 'Manager', 'Cashier', 'Supplier')) DEFAULT 'Customer', -- Different roles in the system
+    Phone VARCHAR(50), -- Contact number
+    Address TEXT,  -- Address of the user
+    CreatedAt DATETIME2 DEFAULT CURRENT_TIMESTAMP, -- Timestamp of account creation
+ 	 IsActive BIT DEFAULT 1 -- Active/Inactive flag
+
+);
+GO
+-- 2️⃣ Categories (Including Subcategories & Brands)
+CREATE TABLE Categories (
+    CategoryID INT PRIMARY KEY IDENTITY(1,1),
+    ParentCategoryID INT NULL, -- Self-referencing to allow hierarchical categories
+    Name VARCHAR(255) NOT NULL, -- Category name (can be Master category, Subcategory, or Brand)
+    Image1 VARCHAR(255), -- Image URL for display purposes
+    Image2 VARCHAR(255), -- Secondary image URL
+    Description TEXT, -- Description of the category
+    IsActive BIT DEFAULT 1, -- Active/Inactive flag
+    FOREIGN KEY (ParentCategoryID) REFERENCES Categories(CategoryID) ON DELETE NO ACTION -- Maintain hierarchy
+);
+GO
+-- 3️⃣ Products & Variations
+CREATE TABLE Products (
+    ProductID INT PRIMARY KEY IDENTITY(1,1),
+    CategoryID INT NOT NULL, -- Category under which product falls
+    Name VARCHAR(255) NOT NULL, -- Product name
+    Size VARCHAR(255) NOT NULL, -- Product size (e.g., 1L, 5L for paints)
+    Description TEXT, -- Product description
+    SKU VARCHAR(50) UNIQUE NOT NULL, -- Stock Keeping Unit for tracking
+    Price DECIMAL(10,2) NOT NULL, -- Product price
+    StockQuantity INT DEFAULT 0, -- Available stock count
+    MinimumStockLevel INT DEFAULT 0, -- Minimum stock alert level
+    CreatedAt  DATETIME2 DEFAULT CURRENT_TIMESTAMP, -- Creation timestamp
+    UpdatedAt  DATETIME2 DEFAULT CURRENT_TIMESTAMP, -- Last updated timestamp
+  IsActive BIT DEFAULT 1, -- Active/Inactive flag
+    FOREIGN KEY (CategoryID) REFERENCES Categories(CategoryID) ON DELETE CASCADE -- Maintains category linkage
+);
+GO
+CREATE TABLE ProductVariations (
+    VariationID INT PRIMARY KEY IDENTITY(1,1),
+    ProductID INT NOT NULL, -- Product to which this variation belongs
+    ColorName VARCHAR(100) NOT NULL, -- Color name for paints
+    ColorCode VARCHAR(7) NOT NULL, -- HEX color code
+    Image VARCHAR(255), -- Image URL for the variation
+    StockQuantity INT DEFAULT 0, -- Available stock for this variation
+    MinimumStockLevel INT DEFAULT 0, -- Minimum stock alert level
+  CreatedAt  DATETIME2 DEFAULT CURRENT_TIMESTAMP, -- Creation timestamp
+    UpdatedAt  DATETIME2 DEFAULT CURRENT_TIMESTAMP, -- Last updated timestamp
+  IsActive BIT DEFAULT 1, -- Active/Inactive flag
+    FOREIGN KEY (ProductID) REFERENCES Products(ProductID) ON DELETE CASCADE -- Link to parent product
+);
+GO
+-- 4️⃣ Inventory & Warehouses
+CREATE TABLE Warehouses (
+    WarehouseID INT PRIMARY KEY IDENTITY(1,1),
+    Name VARCHAR(255) NOT NULL, -- Name of the warehouse
+    Location VARCHAR(255) NOT NULL, -- Address/location of the warehouse
+  IsActive BIT DEFAULT 1 -- Active/Inactive flag
+);
+GO
+CREATE TABLE Inventory (
+    InventoryID INT PRIMARY KEY IDENTITY(1,1),
+    ProductID INT NOT NULL, -- Product being stored
+    WarehouseID INT NOT NULL, -- Warehouse where product is stored
+    StockQuantity INT NOT NULL, -- Current stock quantity
+    LastUpdated  DATETIME2 DEFAULT CURRENT_TIMESTAMP, -- Last updated timestamp
+    FOREIGN KEY (ProductID) REFERENCES Products(ProductID) ON DELETE CASCADE,
+    FOREIGN KEY (WarehouseID) REFERENCES Warehouses(WarehouseID) ON DELETE CASCADE
+);
+GO
+-- 4.1️⃣ Batch Tracking (For Paints)
+CREATE TABLE BatchTracking (
+    BatchID INT PRIMARY KEY IDENTITY(1,1),
+    ProductID INT NOT NULL, -- Product associated with the batch
+    WarehouseID INT NOT NULL, -- Warehouse where batch is stored
+    BatchNumber VARCHAR(50) NOT NULL UNIQUE, -- Unique batch identifier
+    ExpiryDate DATE, -- Expiry date (if applicable)
+    StockQuantity INT NOT NULL, -- Available stock for the batch
+    FOREIGN KEY (ProductID) REFERENCES Products(ProductID) ON DELETE CASCADE,
+    FOREIGN KEY (WarehouseID) REFERENCES Warehouses(WarehouseID) ON DELETE CASCADE
+);
+GO
+-- 5️⃣ Purchase Orders
+CREATE TABLE PurchaseOrders (
+    PurchaseOrderID INT PRIMARY KEY IDENTITY(1,1),
+    UserId INT NULL, -- User who placed the purchase order
+    OrderDate DATETIME2 DEFAULT CURRENT_TIMESTAMP, -- Order date
+    Status VARCHAR(50) NOT NULL CHECK (Status IN ('Pending', 'Completed', 'Canceled')) DEFAULT 'Pending', -- Purchase order status
+    TotalCost DECIMAL(10,2), -- Total order cost
+    FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE SET NULL
+);
+GO
+CREATE TABLE PurchaseOrderItems (
+    POItemID INT PRIMARY KEY IDENTITY(1,1),
+    PurchaseOrderID INT NOT NULL, -- Purchase order reference
+    ProductID INT NOT NULL, -- Product being ordered
+    Quantity INT NOT NULL, -- Quantity ordered
+    UnitCost DECIMAL(10,2), -- Cost per unit
+    FOREIGN KEY (PurchaseOrderID) REFERENCES PurchaseOrders(PurchaseOrderID) ON DELETE CASCADE,
+    FOREIGN KEY (ProductID) REFERENCES Products(ProductID) ON DELETE CASCADE
+);
+GO
+-- 6️⃣ Orders
+CREATE TABLE Orders (
+    OrderID INT PRIMARY KEY IDENTITY(1,1),
+    UserID INT, 
+    OrderDate DATETIME2 DEFAULT CURRENT_TIMESTAMP, -- Order placement date
+    Status VARCHAR(50) NOT NULL CHECK (Status IN ('Pending', 'Completed', 'Canceled')) DEFAULT 'Pending', -- Order status
+    TotalAmount DECIMAL(10,2), -- Total order cost
+    PaymentStatus VARCHAR(50) NOT NULL CHECK (PaymentStatus IN ('Pending', 'Paid', 'Refund')) DEFAULT 'Pending', -- Payment status
+    FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE SET NULL
+);
+GO
+CREATE TABLE OrderItems (
+    OrderItemID INT PRIMARY KEY IDENTITY(1,1),
+    OrderID INT NOT NULL, -- Order reference
+    ProductID INT NOT NULL, -- Product purchased
+    Quantity INT NOT NULL, -- Quantity ordered
+    Price DECIMAL(10,2) NOT NULL, -- Price per unit
+    FOREIGN KEY (OrderID) REFERENCES Orders(OrderID) ON DELETE CASCADE,
+    FOREIGN KEY (ProductID) REFERENCES Products(ProductID) ON DELETE CASCADE
+);
+GO
+-- 7️⃣ Payments & Transactions
+CREATE TABLE Payments (
+    PaymentID INT PRIMARY KEY IDENTITY(1,1),
+    OrderID INT NOT NULL, -- Order reference
+    PaymentDate DATETIME2 DEFAULT CURRENT_TIMESTAMP, -- Payment timestamp
+    Amount DECIMAL(10,2) NOT NULL, -- Amount paid
+  PaymentMethod VARCHAR(50) NOT NULL CHECK (PaymentMethod IN ('Cash', 'Card', 'Online','COD')) DEFAULT 'Cash',  -- Payment method used
+    TransactionID VARCHAR(100) UNIQUE, -- External transaction ID
+    FOREIGN KEY (OrderID) REFERENCES Orders(OrderID) ON DELETE CASCADE
+);
+GO
+-- 8️⃣ POS (Point of Sale)
+CREATE TABLE POS_Transactions (
+    TransactionID INT PRIMARY KEY IDENTITY(1,1),
+    CashierID INT NOT NULL, -- User handling the transaction
+    OrderID INT NOT NULL, -- Order reference
+    TransactionDate DATETIME2 DEFAULT CURRENT_TIMESTAMP, -- Transaction date
+    PaymentType VARCHAR(50) NOT NULL CHECK (PaymentType IN ('Cash', 'Card', 'Online')) DEFAULT 'Cash',  -- Payment type
+    TotalAmount DECIMAL(10,2) NOT NULL, -- Total transaction amount
+    FOREIGN KEY (CashierID) REFERENCES Users(UserID) ON DELETE CASCADE,
+    FOREIGN KEY (OrderID) REFERENCES Orders(OrderID) ON DELETE CASCADE
+);
+GO
+-- 9️⃣ Product Attributes (For Hardware Items)
+CREATE TABLE ProductAttributes (
+    AttributeID INT PRIMARY KEY IDENTITY(1,1),
+    ProductID INT NOT NULL, -- Product to which attribute belongs
+    AttributeName VARCHAR(255) NOT NULL, -- Name of the attribute (e.g., material type)
+    AttributeValue VARCHAR(255) NOT NULL, -- Value of the attribute (e.g., wood, metal)
+  IsActive BIT DEFAULT 1, -- Active/Inactive flag
+    FOREIGN KEY (ProductID) REFERENCES Products(ProductID) ON DELETE CASCADE
+);
+GO
