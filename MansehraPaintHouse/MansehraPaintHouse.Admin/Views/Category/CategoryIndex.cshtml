@@ -1,165 +1,182 @@
-@model PaginatedList<MansehraPaintHouse.Core.Entities.Category>
+﻿@model PaginatedList<MansehraPaintHouse.Core.Entities.Category>
 
-<div class="card">
-    @Html.AntiForgeryToken()
-    <div class="card-header">
-        <h3 class="card-title">Categories</h3>
-    </div>
-    <div class="card-body border-bottom py-3">
-        <div class="d-flex">
-            <div class="text-muted">
-                Show
-                <div class="mx-2 d-inline-block">
-                    <input type="text"
-                           class="form-control form-control-sm"
-                           value="@Model.PageSize"
-                           size="3"
-                           id="pageSizeInput"
-                           aria-label="Categories count">
-                </div>
-                entries
-            </div>
-            <div class="ms-auto text-muted">
-                <form asp-action="CategoryIndex" method="get" class="d-flex align-items-center">
-                    <input type="hidden" name="pageSize" value="@Model.PageSize" />
-                    <input type="hidden" name="pageNumber" value="1" />
-                    Search:
-                    <div class="ms-2 d-inline-block">
-                        <input type="text"
-                               class="form-control form-control-sm"
-                               name="searchTerm"
-                               value="@ViewBag.SearchTerm"
-                               aria-label="Search category">
+@{
+    ViewData["Title"] = "Category Index";
+}
+
+@Html.AntiForgeryToken()
+<!-- Page header -->
+<div class="page-header d-print-none">
+    <div class="container-xl">
+        <div class="row g-2 align-items-center">
+            <div class="col">
+                
+                <h2 class="page-title">
+                    Categories
+                </h2>
+                <a asp-action="CategoryUpsert" asp-controller="Category" class="btn btn-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M12 5l0 14" /><path d="M5 12l14 0" /></svg>
+                    Add
+                </a>
+                <div class="card-body border-bottom py-3">
+                    <div class="d-flex">
+                        <div class="text-muted">
+                            Show
+                            <div class="mx-2 d-inline-block">
+                                <input type="text"
+                                       class="form-control form-control-sm"
+                                       value="@Model.PageSize"
+                                       size="3"
+                                       id="pageSizeInput"
+                                       aria-label="Categories count">
+                            </div>
+                            entries
+                        </div>
+                        <div class="ms-auto text-muted">
+                            <form asp-action="CategoryIndex" method="get" class="d-flex align-items-center">
+                                <input type="hidden" name="pageSize" value="@Model.PageSize" />
+                                <input type="hidden" name="pageNumber" value="1" />
+                                <div class="ms-2 d-inline-block">
+                                    <input type="text" placeholder="Search"
+                                           class="form-control form-control-sm"
+                                           name="searchTerm"
+                                           value="@ViewBag.SearchTerm"
+                                           aria-label="Search category">
+                                </div>
+                                <button type="submit" class="btn btn-sm btn-primary ms-2">Search</button>
+                            </form>
+                        </div>
                     </div>
-                    <button type="submit" class="btn btn-sm btn-primary ms-2">Search</button>
-                </form>
+                </div>
             </div>
         </div>
     </div>
-    <div class="table-responsive">
-        <table class="table card-table table-vcenter text-nowrap datatable">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Parent Category</th>
-                    <th>Description</th>
-                    <th>Images</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var category in Model)
-                {
-                    <tr>
-                        <td>@category.Name</td>
-                        <td>
-                            @if (category.ParentCategoryID.HasValue)
+</div>
+<!-- Page body -->
+<div class="page-body">
+    <div class="container-xl">
+        <div class="card mb-5">
+            <div class="card-body">
+                <div id="table-default" class="table-responsive">
+                    <table id="table-default" class="table">
+                        <thead>
+                            <tr>
+                                <th><button class="table-sort" data-sort="sort-name">Name</button></th>
+                                <th><button class="table-sort" data-sort="sort-parent">Parent Category</button></th>
+                                <th><button class="table-sort" data-sort="sort-description">Description</button></th>
+                                <th>Images</th> 
+                                <th><button class="table-sort" data-sort="sort-status">Status</button></th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="table-tbody">
+                            @foreach (var category in Model)
                             {
-                                var parentCategory = Model.FirstOrDefault(c => c.CategoryID == category.ParentCategoryID);
-                                @parentCategory?.Name
+                                <tr>
+                                    <td class="sort-name">@category.Name</td>
+                                    <td class="sort-parent">
+                                        @if (category.ParentCategory != null)
+                                        {
+                                            @category.ParentCategory.Name
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">Master Category</span>
+                                        }
+                                    </td>
+                                    <td class="sort-description">@category.Description</td>
+                                    <td class="sort-images">
+                                        <div class="d-flex gap-2">
+                                            @if (!string.IsNullOrEmpty(category.Image1))
+                                            {
+                                                <img src="@category.Image1" alt="Image 1" style="max-width: 50px; height: auto;" class="rounded" />
+                                            }
+                                            @if (!string.IsNullOrEmpty(category.Image2))
+                                            {
+                                                <img src="@category.Image2" alt="Image 2" style="max-width: 50px; height: auto;" class="rounded" />
+                                            }
+                                        </div>
+                                    </td>
+                                    <td class="sort-status">
+                                        @if (category.IsActive)
+                                        {
+                                            <span class="badge bg-success me-1">Active</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger me-1">InActive</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="btn-list flex-nowrap">
+                                            <a asp-action="CategoryUpsert" asp-controller="Category" asp-route-id="@category.CategoryID" class="btn btn-primary btn-sm">
+                                                Edit
+                                            </a>
+                                            @if (category.IsActive)
+                                            {
+                                                <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete(@category.CategoryID)">
+                                                    Delete
+                                                </button>
+                                            }
+                                            else
+                                            {
+                                                <button type="button" class="btn btn-success btn-sm" onclick="confirmDelete(@category.CategoryID)">
+                                                    Activate
+                                                </button>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
                             }
-                            else
-                            {
-                                <span class="text-muted">Master Category</span>
-                            }
-                        </td>
-                        <td>@category.Description</td>
-                        <td>
-                            <div class="d-flex gap-2">
-                                @if (!string.IsNullOrEmpty(category.Image1))
-                                {
-                                    <img src="@category.Image1" alt="Image 1" style="max-width: 50px; height: auto;" class="rounded" />
-                                }
-                                @if (!string.IsNullOrEmpty(category.Image2))
-                                {
-                                    <img src="@category.Image2" alt="Image 2" style="max-width: 50px; height: auto;" class="rounded" />
-                                }
-                            </div>
-                        </td>
-                        <td>
-                            @if (category.IsActive)
-                            {
-                                <span class="badge bg-success me-1">Active</span>
-                            }
-                            else
-                            {
-                                <span class="badge bg-danger me-1">InActive</span>
-                            }
-                        </td>
-                        <td class="text-end">
-                            <div class="btn-list flex-nowrap">
-                                <a asp-action="CategoryUpsert" asp-controller="Category" asp-route-id="@category.CategoryID" class="btn btn-primary btn-sm">
-                                    Edit
-                                </a>
-                                @if (category.IsActive)
-                                {
-                                    <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete(@category.CategoryID)">
-                                        Delete
-                                    </button>
-                                }
-                                else
-                                {
-                                    <button type="button" class="btn btn-success btn-sm" onclick="confirmDelete(@category.CategoryID)">
-                                        Activate
-                                    </button>
-                                }
-                            </div>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-    <div class="card-footer d-flex align-items-center">
-        <p class="m-0 text-muted">
-            Showing <span>@((Model.PageIndex - 1) * Model.PageSize + 1)</span>
-            to <span>@Math.Min(Model.PageIndex * Model.PageSize, Model.TotalItems)</span>
-            of <span>@Model.TotalItems</span> entries
-        </p>
-        <ul class="pagination m-0 ms-auto">
-            <li class="page-item @(!Model.HasPreviousPage ? "disabled" : "")">
-                <a class="page-link"
-                   asp-action="CategoryIndex"
-                   asp-route-pageNumber="@(Model.PageIndex - 1)"
-                   asp-route-pageSize="@Model.PageSize"
-                   asp-route-searchTerm="@ViewBag.SearchTerm"
-                   tabindex="-1"
-                   aria-disabled="@(!Model.HasPreviousPage)">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M15 6l-6 6l6 6" /></svg>
-                    prev
-                </a>
-            </li>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer d-flex align-items-center">
+                    <p class="m-0 text-muted">
+                        Showing <span>@((Model.PageIndex - 1) * Model.PageSize + 1)</span>
+                        to <span>@Math.Min(Model.PageIndex * Model.PageSize, Model.TotalItems)</span>
+                        of <span>@Model.TotalItems</span> entries
+                    </p>
+                    <ul class="pagination m-0 ms-auto">
+                        <li class="page-item @(!Model.HasPreviousPage ? "disabled" : "")">
+                            <a class="page-link"
+                               asp-action="CategoryIndex"
+                               asp-route-pageNumber="@(Model.PageIndex - 1)"
+                               asp-route-pageSize="@Model.PageSize"
+                               asp-route-searchTerm="@ViewBag.SearchTerm"
+                               tabindex="-1"
+                               aria-disabled="@(!Model.HasPreviousPage)">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M15 6l-6 6l6 6" /></svg>
+                                prev
+                            </a>
+                        </li>
 
-            @for (int i = 1; i <= Model.TotalPages; i++)
-            {
-                <li class="page-item @(i == Model.PageIndex ? "active" : "")">
-                    <a class="page-link"
-                       asp-action="CategoryIndex"
-                       asp-route-pageNumber="@i"
-                       asp-route-pageSize="@Model.PageSize"
-                       asp-route-searchTerm="@ViewBag.SearchTerm">@i</a>
-                </li>
-            }
+                        @for (int i = 1; i <= Model.TotalPages; i++)
+                        {
+                            <li class="page-item @(i == Model.PageIndex ? "active" : "")">
+                                <a class="page-link"
+                                   asp-action="CategoryIndex"
+                                   asp-route-pageNumber="@i"
+                                   asp-route-pageSize="@Model.PageSize"
+                                   asp-route-searchTerm="@ViewBag.SearchTerm">@i</a>
+                            </li>
+                        }
 
-            <li class="page-item @(!Model.HasNextPage ? "disabled" : "")">
-                <a class="page-link"
-                   asp-action="CategoryIndex"
-                   asp-route-pageNumber="@(Model.PageIndex + 1)"
-                   asp-route-pageSize="@Model.PageSize"
-                   asp-route-searchTerm="@ViewBag.SearchTerm">
-                    next
-                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M9 6l6 6l-6 6" /></svg>
-                </a>
-            </li>
-        </ul>
+                        <li class="page-item @(!Model.HasNextPage ? "disabled" : "")">
+                            <a class="page-link"
+                               asp-action="CategoryIndex"
+                               asp-route-pageNumber="@(Model.PageIndex + 1)"
+                               asp-route-pageSize="@Model.PageSize"
+                               asp-route-searchTerm="@ViewBag.SearchTerm">
+                                next
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M9 6l6 6l-6 6" /></svg>
+                            </a>
+                        </li>
+                    </ul>
+            </div>
+        </div>
     </div>
 </div>
 
-<div class="mt-3">
-    <a asp-action="CategoryUpsert" asp-controller="Category" class="btn btn-primary">
-        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M12 5l0 14" /><path d="M5 12l14 0" /></svg>
-        Create New Category
-    </a>
-</div> 
+<!-- Add bottom spacing -->
+<div class="mb-1"></div>

@@ -1,6 +1,7 @@
 using MansehraPaintHouse.Core.Entities;
 using MansehraPaintHouse.Core.Interfaces.IServices;
 using MansehraPaintHouse.Core.Interfaces.IRepositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace MansehraPaintHouse.Infrastructure.Services
 {
@@ -20,9 +21,8 @@ namespace MansehraPaintHouse.Infrastructure.Services
 
         public async Task<IQueryable<Category>> GetAllCategoriesQueryableAsync()
         {
-            return _categoryRepository.GetQueryable();
+            return _categoryRepository.GetQueryable().Include(c => c.ParentCategory);
         }
-
         public async Task<IEnumerable<Category>> GetActiveCategoriesAsync()
         {
             return await _categoryRepository.GetActiveCategoriesAsync();
