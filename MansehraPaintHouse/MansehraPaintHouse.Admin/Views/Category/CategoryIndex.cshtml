@@ -10,7 +10,7 @@
     <div class="container-xl">
         <div class="row g-2 align-items-center">
             <div class="col">
-                
+
                 <h2 class="page-title">
                     Categories
                 </h2>
@@ -33,17 +33,17 @@
                             entries
                         </div>
                         <div class="ms-auto text-muted">
-                            <form asp-action="CategoryIndex" method="get" class="d-flex align-items-center">
+                            <form id="searchForm" asp-action="CategoryIndex" method="get" class="d-flex align-items-center">
                                 <input type="hidden" name="pageSize" value="@Model.PageSize" />
                                 <input type="hidden" name="pageNumber" value="1" />
                                 <div class="ms-2 d-inline-block">
-                                    <input type="text" placeholder="Search"
+                                    <span class="input-group-text">X</span>
+                                    <input type="text" placeholder="Search..."
                                            class="form-control form-control-sm"
                                            name="searchTerm"
                                            value="@ViewBag.SearchTerm"
                                            aria-label="Search category">
                                 </div>
-                                <button type="submit" class="btn btn-sm btn-primary ms-2">Search</button>
                             </form>
                         </div>
                     </div>
@@ -64,7 +64,7 @@
                                 <th><button class="table-sort" data-sort="sort-name">Name</button></th>
                                 <th><button class="table-sort" data-sort="sort-parent">Parent Category</button></th>
                                 <th><button class="table-sort" data-sort="sort-description">Description</button></th>
-                                <th>Images</th> 
+                                <th>Images</th>
                                 <th><button class="table-sort" data-sort="sort-status">Status</button></th>
                                 <th>Actions</th>
                             </tr>
@@ -173,10 +173,10 @@
                             </a>
                         </li>
                     </ul>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Add bottom spacing -->
-<div class="mb-1"></div>
+    <!-- Add bottom spacing -->
+    <div class="mb-1"></div>

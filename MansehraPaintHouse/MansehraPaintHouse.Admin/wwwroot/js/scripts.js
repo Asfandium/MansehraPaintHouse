@@ -48,10 +48,10 @@ function confirmDelete(categoryId) {
 }
 
 // Handle page size changes
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const pageSizeInput = document.getElementById('pageSizeInput');
     if (pageSizeInput) {
-        pageSizeInput.addEventListener('change', function() {
+        pageSizeInput.addEventListener('change', function () {
             const pageSize = parseInt(this.value) || 8;
             if (pageSize > 0) {
                 const searchTerm = document.querySelector('input[name="searchTerm"]')?.value || '';
@@ -59,10 +59,19 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-}); 
 
-// Datatable Sorting
-document.addEventListener("DOMContentLoaded", function () {
+    // Search bar code
+    const searchForm = document.getElementById('searchForm');
+    const searchInput = searchForm.querySelector('input[name="searchTerm"]');
+
+    searchInput.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            searchForm.submit();
+        }
+    });
+
+    // Datatable Sorting
     const list = new List('table-default', {
         sortClass: 'table-sort',
         listClass: 'table-tbody',
