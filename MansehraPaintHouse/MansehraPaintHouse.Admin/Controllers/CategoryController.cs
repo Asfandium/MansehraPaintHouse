@@ -1,11 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
 using MansehraPaintHouse.Core.Entities;
 using MansehraPaintHouse.Core.Interfaces.IServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using System.IO;
 
 namespace MansehraPaintHouse.Admin.Controllers
 {
+    
     public class CategoryController : Controller
     {
         private readonly ICategoryService _categoryService;
@@ -15,6 +17,7 @@ namespace MansehraPaintHouse.Admin.Controllers
             _categoryService = categoryService;
         }
 
+        [Authorize]
         public async Task<IActionResult> CategoryIndex(int? pageNumber, int? pageSize, string searchTerm)
         {
             int defaultPageSize = 8;  // Default items per page
@@ -56,6 +59,7 @@ namespace MansehraPaintHouse.Admin.Controllers
             return PartialView("_CategoryUpsert", category);
         }
 
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CategoryUpsert(Category category, IFormFile? Image1File, IFormFile? Image2File)

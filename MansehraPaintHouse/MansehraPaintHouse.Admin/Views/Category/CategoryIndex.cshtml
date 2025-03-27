@@ -3,7 +3,6 @@
 @{
     ViewData["Title"] = "Category Index";
 }
-
 @Html.AntiForgeryToken()
 <!-- Page header -->
 <div class="page-header d-print-none">
@@ -13,12 +12,6 @@
                 <h2 class="page-title">
                     Categories
                 </h2>
-                @* <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#categoryModal" onclick="loadCategoryUpsertModal(0)">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M12 5l0 14" /><path d="M5 12l14 0" /></svg>
-                    Add
-                </button> *@
-
-
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#categoryModal" onclick="loadCategoryUpsertModal(0)">
                     <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M12 5l0 14" /><path d="M5 12l14 0" /></svg>
                     Add
@@ -177,14 +170,13 @@
                             </a>
                         </li>
                     </ul>
-                </div>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Add bottom spacing -->
-    <div class="mb-1"></div>
-
+<!-- Add bottom spacing -->
+<div class="mb-1"></div>
     <div class="modal modal-blur fade" id="categoryModal" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
             <div class="modal-content">

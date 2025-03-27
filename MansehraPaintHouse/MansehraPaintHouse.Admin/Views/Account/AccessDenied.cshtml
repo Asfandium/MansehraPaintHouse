@@ -1,0 +1,23 @@
+@{
+    ViewData["Title"] = "Access Denied";
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">@ViewData["Title"]</div>
+                <div class="card-body">
+                    <div class="alert alert-danger">
+                        <h4 class="alert-heading">Access Denied!</h4>
+                        <p>You do not have permission to access this resource.</p>
+                        <hr>
+                        <p class="mb-0">
+                            <a asp-action="Login" asp-route-returnUrl="@ViewData["ReturnUrl"]" class="btn btn-primary">Return to Login</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 
