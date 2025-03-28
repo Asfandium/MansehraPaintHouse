@@ -28,7 +28,7 @@ CREATE TABLE Categories (
     Name VARCHAR(255) NOT NULL, -- Category name (can be Master category, Subcategory, or Brand)
     Image1 VARCHAR(255), -- Image URL for display purposes
     Image2 VARCHAR(255), -- Secondary image URL
-    Description TEXT, -- Description of the category
+    Description VARCHAR(MAX), -- Description of the category
     IsActive BIT DEFAULT 1, -- Active/Inactive flag
     FOREIGN KEY (ParentCategoryID) REFERENCES Categories(CategoryID) ON DELETE NO ACTION -- Maintain hierarchy
 );
