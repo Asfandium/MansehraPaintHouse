@@ -65,7 +65,7 @@ namespace MansehraPaintHouse.Admin.Controllers
 
             ViewBag.Categories = await _categoryService.GetAllCategoriesAsync();
             ViewBag.Attributes = await _attributeService.GetAllAttributesAsync();
-            return PartialView("_ProductUpsert", product);
+            return View("ProductUpsert", product); // Return the full view
         }
 
         [HttpPost]
