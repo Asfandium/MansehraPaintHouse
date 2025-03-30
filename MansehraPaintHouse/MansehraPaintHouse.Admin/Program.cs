@@ -17,9 +17,17 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 // Register repositories
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IProductAttributeRepository, ProductAttributeRepository>();
+builder.Services.AddScoped<IAttributeValueRepository, AttributeValueRepository>();
+builder.Services.AddScoped<IProductVariationRepository, ProductVariationRepository>();
 
 // Register services
 builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IProductAttributeService, ProductAttributeService>();
+builder.Services.AddScoped<IAttributeValueService, AttributeValueService>();
+builder.Services.AddScoped<IProductVariationService, ProductVariationService>();
 
 var app = builder.Build();
 

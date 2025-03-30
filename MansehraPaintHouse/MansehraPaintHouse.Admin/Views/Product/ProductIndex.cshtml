@@ -1,0 +1,167 @@
+@model PaginatedList<MansehraPaintHouse.Core.Entities.Product>
+
+@{
+    ViewData["Title"] = "Products";
+}
+
+<div class="container-fluid">
+    <div class="row mb-3">
+        <div class="col">
+            <h2>Products</h2>
+        </div>
+        <div class="col text-end">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#productModal">
+                <i class="bi bi-plus-circle"></i> Add Product
+            </button>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <form method="get" class="row g-3 mb-3">
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <input type="text" name="searchString" class="form-control" placeholder="Search products..." value="@ViewData["CurrentFilter"]" />
+                        <button type="submit" class="btn btn-outline-secondary">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>SKU</th>
+                            <th>Price</th>
+                            <th>Stock</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var product in Model)
+                        {
+                            <tr>
+                                <td>@product.Name</td>
+                                <td>@product.Category?.Name</td>
+                                <td>@product.SKU</td>
+                                <td>@product.Price.ToString("C")</td>
+                                <td>@product.StockQuantity</td>
+                                <td>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input status-toggle" type="checkbox" 
+                                               data-product-id="@product.ProductID" 
+                                               @(product.IsActive ? "checked" : "") />
+                                    </div>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-primary edit-product" 
+                                            data-product-id="@product.ProductID">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <nav aria-label="Product pagination">
+                <ul class="pagination justify-content-center">
+                    @{
+                        var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+                        var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+                    }
+                    <li class="page-item @prevDisabled">
+                        <a class="page-link" asp-action="ProductIndex"
+                           asp-route-pageNumber="@(Model.PageIndex - 1)"
+                           asp-route-currentFilter="@ViewData["CurrentFilter"]">
+                            Previous
+                        </a>
+                    </li>
+                    @for (var i = 1; i <= Model.TotalPages; i++)
+                    {
+                        <li class="page-item @(i == Model.PageIndex ? "active" : "")">
+                            <a class="page-link" asp-action="ProductIndex"
+                               asp-route-pageNumber="@i"
+                               asp-route-currentFilter="@ViewData["CurrentFilter"]">
+                                @i
+                            </a>
+                        </li>
+                    }
+                    <li class="page-item @nextDisabled">
+                        <a class="page-link" asp-action="ProductIndex"
+                           asp-route-pageNumber="@(Model.PageIndex + 1)"
+                           asp-route-currentFilter="@ViewData["CurrentFilter"]">
+                            Next
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<!-- Product Modal -->
+<div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="productModalLabel">Add/Edit Product</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="productFormContainer">
+                    <!-- Product form will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Handle status toggle
+            $('.status-toggle').change(function () {
+                var productId = $(this).data('product-id');
+                var isActive = $(this).prop('checked');
+                
+                $.post('/Product/ToggleStatus/' + productId, { isActive: isActive })
+                    .done(function () {
+                        toastr.success('Status updated successfully');
+                    })
+                    .fail(function () {
+                        toastr.error('Error updating status');
+                        $(this).prop('checked', !isActive);
+                    });
+            });
+
+            // Handle edit button click
+            $('.edit-product').click(function () {
+                var productId = $(this).data('product-id');
+                loadProductForm(productId);
+            });
+
+            // Handle add product button click
+            $('[data-bs-target="#productModal"]').click(function () {
+                loadProductForm();
+            });
+
+            function loadProductForm(productId) {
+                var url = productId ? '/Product/ProductUpsert/' + productId : '/Product/ProductUpsert';
+                $.get(url)
+                    .done(function (html) {
+                        $('#productFormContainer').html(html);
+                    })
+                    .fail(function () {
+                        toastr.error('Error loading product form');
+                    });
+            }
+        });
+    </script>
+} 
