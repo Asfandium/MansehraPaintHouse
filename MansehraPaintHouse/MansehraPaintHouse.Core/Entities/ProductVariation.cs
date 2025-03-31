@@ -32,6 +32,15 @@ namespace MansehraPaintHouse.Core.Entities
         [Range(0, int.MaxValue, ErrorMessage = "Minimum Stock Level must be greater than or equal to 0")]
         public int MinimumStockLevel { get; set; }
 
+        [StringLength(20, ErrorMessage = "Color Code cannot be longer than 20 characters")]
+        public string? ColorCode { get; set; }
+
+        [StringLength(100, ErrorMessage = "Color Name cannot be longer than 100 characters")]
+        public string? ColorName { get; set; }
+
+        [StringLength(50, ErrorMessage = "Size cannot be longer than 50 characters")]
+        public string? Size { get; set; }
+
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
         public bool IsActive { get; set; } = true;

@@ -52,6 +52,22 @@ namespace MansehraPaintHouse.Admin.Controllers
             return View(paginatedProducts);
         }
 
+        //public async Task<IActionResult> ProductUpsert(int? id)
+        //{
+        //    var product = id == null || id == 0
+        //        ? new Product()
+        //        : await _productService.GetProductByIdAsync(id.Value);
+
+        //    if (product == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    ViewBag.Categories = await _categoryService.GetAllCategoriesAsync();
+        //    ViewBag.Attributes = await _attributeService.GetAllAttributesAsync();
+        //    return View("ProductUpsert", product); // Return the full view
+        //}
+
         public async Task<IActionResult> ProductUpsert(int? id)
         {
             var product = id == null || id == 0
@@ -63,9 +79,15 @@ namespace MansehraPaintHouse.Admin.Controllers
                 return NotFound();
             }
 
-            ViewBag.Categories = await _categoryService.GetAllCategoriesAsync();
+            // Fetch categories and filter parent categories
+            var categories = await _categoryService.GetAllCategoriesAsync();
+            ViewBag.Categories = categories.Where(c => c.ParentCategoryID == null).ToList();
+
+
+            // Populate attributes for the dropdown
             ViewBag.Attributes = await _attributeService.GetAllAttributesAsync();
-            return View("ProductUpsert", product); // Return the full view
+
+            return View(product);
         }
 
         [HttpPost]
