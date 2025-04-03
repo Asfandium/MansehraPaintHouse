@@ -48,10 +48,24 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-6">
+                           @*  <div class="col-md-6">
                                 <div class="mb-3">
                                     <label class="form-label required">Subcategory</label>
-                                    <select class="form-select" id="subcategorySelect" required>
+                                    <select class="form-select" id="subcategorySelect" name="SubcategoryID" required>
+                                        <option value="">-- Select Subcategory --</option>
+                                        @foreach (var category in categories.Where(c => c.ParentCategoryID == Model.CategoryID))
+                                        {
+                                            <option value="@category.CategoryID">@category.Name</option>
+                                        }
+                                    </select>
+                                    <span class="text-danger small" id="subcategoryError"></span>
+                                </div>
+                            </div> *@
+
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Subcategory</label>
+                                    <select class="form-select" id="subcategorySelect" name="SubcategoryID">
                                         <option value="">-- Select Subcategory --</option>
                                         @foreach (var category in categories.Where(c => c.ParentCategoryID == Model.CategoryID))
                                         {
@@ -113,10 +127,33 @@
                                     </div>
                                 </div>
 
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label asp-for="CreatedAt" class="form-label"></label>
+                                        <input asp-for="CreatedAt" class="form-control" type="datetime-local" readonly />
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label asp-for="UpdatedAt" class="form-label"></label>
+                                        <input asp-for="UpdatedAt" class="form-control" type="datetime-local" readonly />
+                                    </div>
+                                </div>
+
                                 <div class="col-md-12">
                                     <div class="mb-3">
                                         <label class="form-label">Product Image</label>
                                         <input type="file" name="imageFile" class="form-control" accept="image/*" />
+                                    </div>
+                                </div>
+
+                                <div class="col-12">
+                                    <div class="mb-3">
+                                        <div class="form-check">
+                                            <input asp-for="IsActive" class="form-check-input" type="checkbox" />
+                                            <label asp-for="IsActive" class="form-check-label"></label>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -143,9 +180,12 @@
                                                     <th>Attribute</th>
                                                     <th>Value</th>
                                                     <th>Color Code</th>
-                                                    <th>Size</th>
+                                                    <th>SKU</th>
+                                                    <th>Description</th>
                                                     <th>Price</th>
                                                     <th>Stock</th>
+                                                    <th>Min Stock</th>
+                                                    <th>Is Active</th>
                                                     <th>Action</th>
                                                 </tr>
                                             </thead>
@@ -153,15 +193,6 @@
                                                 <!-- Variation rows will be added here -->
                                             </tbody>
                                         </table>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-12">
-                                <div class="mb-3">
-                                    <div class="form-check">
-                                        <input asp-for="IsActive" class="form-check-input" type="checkbox" />
-                                        <label asp-for="IsActive" class="form-check-label"></label>
                                     </div>
                                 </div>
                             </div>
@@ -265,20 +296,19 @@
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label required">Value</label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control value-input" required />
-                                    <button type="button" class="btn btn-outline-secondary add-value-btn">
-                                        <i class="bi bi-plus-circle"></i>
-                                    </button>
-                                </div>
+                                <input type="text" class="form-control value-input" required />
                             </div>
                             <div class="col-md-4 color-fields" style="display: none;">
                                 <label class="form-label required">Color Code</label>
-                                <input type="color" class="form-control color-code" />
+                                <input type="color" class="form-control color-code" required />
                             </div>
                             <div class="col-md-4">
-                                <label class="form-label required">Size</label>
-                                <input type="text" class="form-control size" required />
+                                <label class="form-label required">SKU</label>
+                                <input type="text" class="form-control sku" required />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label required">Description</label>
+                                <textarea class="form-control description" required></textarea>
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label required">Price</label>
@@ -293,8 +323,20 @@
                                 <input type="number" class="form-control minstock-input" required />
                             </div>
                             <div class="col-md-12">
-                                <label class="form-label">Image</label>
-                                <input type="file" class="form-control variation-image" accept="image/*" />
+                                <label class="form-label required">Image</label>
+                                <input type="file" class="form-control variation-image" accept="image/*" required />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Created At</label>
+                                <input type="datetime-local" class="form-control created-at" readonly />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Updated At</label>
+                                <input type="datetime-local" class="form-control updated-at" readonly />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Is Active</label>
+                                <input type="checkbox" class="form-check-input is-active" checked />
                             </div>
                             <div class="col-12">
                                 <button type="button" class="btn btn-success add-to-preview">
@@ -308,6 +350,11 @@
                     </div>
                 `;
                 $('#variationsContainer').append(variationHtml);
+
+                // Set default CreatedAt and UpdatedAt values
+                var now = new Date().toISOString().slice(0, 16);
+                $('.variation-form:last .created-at').val(now);
+                $('.variation-form:last .updated-at').val(now);
             }
 
             // Handle attribute change in variation form
@@ -328,7 +375,6 @@
                 if (attributeName) {
                     $.post('/Product/AddAttribute', { name: attributeName })
                         .done(function (data) {
-                            // Add new attribute to all attribute selects
                             $('.attribute-select').each(function () {
                                 $(this).append($('<option></option>').val(data.attributeID).text(data.name));
                             });
@@ -348,19 +394,24 @@
                 var attribute = form.find('.attribute-select option:selected').text();
                 var value = form.find('.value-input').val();
                 var colorCode = form.find('.color-code').val();
-                var size = form.find('.size').val();
+                var sku = form.find('.sku').val();
+                var description = form.find('.description').val();
                 var price = form.find('.price-input').val();
                 var stock = form.find('.stock-input').val();
                 var minStock = form.find('.minstock-input').val();
+                var isActive = form.find('.is-active').is(':checked') ? 'Yes' : 'No';
 
                 var row = `
                     <tr>
                         <td>${attribute}</td>
                         <td>${value}</td>
                         <td style="background-color: ${colorCode || 'transparent'}">${colorCode || '-'}</td>
-                        <td>${size}</td>
+                        <td>${sku}</td>
+                        <td>${description}</td>
                         <td>${price}</td>
                         <td>${stock}</td>
+                        <td>${minStock}</td>
+                        <td>${isActive}</td>
                         <td>
                             <button type="button" class="btn btn-sm btn-danger remove-preview">
                                 <i class="bi bi-trash"></i>
@@ -381,12 +432,33 @@
                 $(this).closest('tr').remove();
             });
 
-            // Form validation
+            // Form submission with variations data
             $('#productForm').submit(function (e) {
-                if ($('#productType').val() === 'variation' && $('#variationsTable tbody tr').length === 0) {
-                    e.preventDefault();
-                    toastr.error('Please add at least one variation');
-                    return false;
+                if ($('#productType').val() === 'variation') {
+                    var variations = [];
+                    $('#variationsTable tbody tr').each(function () {
+                        variations.push({
+                            attribute: $(this).find('td:eq(0)').text(),
+                            value: $(this).find('td:eq(1)').text(),
+                            colorCode: $(this).find('td:eq(2)').text() === '-' ? null : $(this).find('td:eq(2)').text(),
+                            sku: $(this).find('td:eq(3)').text(),
+                            description: $(this).find('td:eq(4)').text(),
+                            price: $(this).find('td:eq(5)').text(),
+                            stockQuantity: $(this).find('td:eq(6)').text(),
+                            minimumStockLevel: $(this).find('td:eq(7)').text(),
+                            isActive: $(this).find('td:eq(8)').text() === 'Yes'
+                        });
+                    });
+                    if (variations.length === 0) {
+                        e.preventDefault();
+                        toastr.error('Please add at least one variation');
+                        return false;
+                    }
+                    $('<input>').attr({
+                        type: 'hidden',
+                        name: 'variations',
+                        value: JSON.stringify(variations)
+                    }).appendTo('#productForm');
                 }
                 return true;
             });
