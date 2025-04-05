@@ -1,0 +1,167 @@
+﻿@model PaginatedList<MansehraPaintHouse.Core.Entities.Product>
+
+@{
+    ViewData["Title"] = "Product Index";
+}
+
+@Html.AntiForgeryToken()
+<!-- Page header -->
+<div class="page-header d-print-none">
+    <div class="container-xl">
+        <div class="row g-2 align-items-center">
+            <div class="col">
+                <h2 class="page-title">
+                    Products
+                </h2>
+                <button type="button" class="btn btn-primary" onclick="location.href='@Url.Action("ProductUpsert", "Product")'">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M12 5l0 14" /><path d="M5 12l14 0" /></svg>
+                    Add
+                </button>
+                <div class="card-body border-bottom py-3">
+                    <div class="d-flex">
+                        <div class="text-muted">
+                            Show
+                            <div class="mx-2 d-inline-block">
+                                <input type="text"
+                                       class="form-control form-control-sm"
+                                       value="@Model.PageSize"
+                                       size="3"
+                                       id="pageSizeInput"
+                                       aria-label="Products count">
+                            </div>
+                            entries
+                        </div>
+                        <div class="ms-auto text-muted">
+                            <form id="searchForm" asp-action="ProductIndex" method="get" class="d-flex align-items-center">
+                                <input type="hidden" name="pageSize" value="@Model.PageSize" />
+                                <input type="hidden" name="pageNumber" value="1" />
+                                <div class="ms-2 d-inline-block">
+                                    <input type="text" placeholder="Search..."
+                                           class="form-control form-control-sm"
+                                           name="searchTerm"
+                                           value="@ViewBag.SearchTerm"
+                                           aria-label="Search product">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Page body -->
+<div class="page-body">
+    <div class="container-xl">
+        <div class="card mb-5">
+            <div class="card-body">
+                <div id="table-default" class="table-responsive">
+                    <table id="table-default" class="table">
+                        <thead>
+                            <tr>
+                                <th><button class="table-sort" data-sort="sort-name">Name</button></th>
+                                <th><button class="table-sort" data-sort="sort-category">Category</button></th>
+                                <th><button class="table-sort" data-sort="sort-description">Description</button></th>
+                                <th>Image</th>
+                                <th><button class="table-sort" data-sort="sort-sku">SKU</button></th>
+                                <th><button class="table-sort" data-sort="sort-price">Price</button></th>
+                                <th><button class="table-sort" data-sort="sort-status">Status</button></th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="table-tbody">
+                            @foreach (var product in Model)
+                            {
+                                <tr>
+                                    <td class="sort-name">@product.Name</td>
+                                    <td class="sort-category">@product.Category.Name</td>
+                                    <td class="sort-description">@product.Description</td>
+                                    <td class="sort-image">
+                                        @if (!string.IsNullOrEmpty(product.Image))
+                                        {
+                                            <img src="@product.Image" alt="Image" style="max-width: 50px; height: auto;" class="rounded" />
+                                        }
+                                    </td>
+                                    <td class="sort-sku">@product.SKU</td>
+                                    <td class="sort-price">@product.Price</td>
+                                    <td class="sort-status">
+                                        @if (product.IsActive)
+                                        {
+                                            <span class="badge bg-success me-1">Active</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger me-1">Inactive</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="btn-list flex-nowrap">
+                                            <button type="button" class="btn btn-primary btn-sm" onclick="location.href='@Url.Action("ProductUpsert", "Product", new { id = product.ProductID })'">
+                                                Edit
+                                            </button>
+                                            @if (product.IsActive)
+                                            {
+                                                <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete(@product.ProductID)">
+                                                    Delete
+                                                </button>
+                                            }
+                                            else
+                                            {
+                                                <button type="button" class="btn btn-success btn-sm" onclick="confirmDelete(@product.ProductID)">
+                                                    Activate
+                                                </button>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer d-flex align-items-center">
+                    <p class="m-0 text-muted">
+                        Showing <span>@((Model.PageIndex - 1) * Model.PageSize + 1)</span>
+                        to <span>@Math.Min(Model.PageIndex * Model.PageSize, Model.TotalItems)</span>
+                        of <span>@Model.TotalItems</span> entries
+                    </p>
+                    <ul class="pagination m-0 ms-auto">
+                        <li class="page-item @(!Model.HasPreviousPage ? "disabled" : "")">
+                            <a class="page-link"
+                               asp-action="ProductIndex"
+                               asp-route-pageNumber="@(Model.PageIndex - 1)"
+                               asp-route-pageSize="@Model.PageSize"
+                               asp-route-searchTerm="@ViewBag.SearchTerm"
+                               tabindex="-1"
+                               aria-disabled="@(!Model.HasPreviousPage)">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M15 6l-6 6l6 6" /></svg>
+                                prev
+                            </a>
+                        </li>
+
+                        @for (int i = 1; i <= Model.TotalPages; i++)
+                        {
+                            <li class="page-item @(i == Model.PageIndex ? "active" : "")">
+                                <a class="page-link"
+                                   asp-action="ProductIndex"
+                                   asp-route-pageNumber="@i"
+                                   asp-route-pageSize="@Model.PageSize"
+                                   asp-route-searchTerm="@ViewBag.SearchTerm">@i</a>
+                            </li>
+                        }
+
+                        <li class="page-item @(!Model.HasNextPage ? "disabled" : "")">
+                            <a class="page-link"
+                               asp-action="ProductIndex"
+                               asp-route-pageNumber="@(Model.PageIndex + 1)"
+                               asp-route-pageSize="@Model.PageSize"
+                               asp-route-searchTerm="@ViewBag.SearchTerm">
+                                next
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M9 6l6 6l-6 6" /></svg>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
