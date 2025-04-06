@@ -15,4 +15,4 @@ namespace MansehraPaintHouse.Core.Interfaces.IServices
         Task<IEnumerable<Category>> GetAllCategoriesAsync();
         Task<IQueryable<Category>> SearchCategoriesAsync(string searchTerm);
     }
-} 
+}

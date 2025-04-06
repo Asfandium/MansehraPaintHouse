@@ -11,4 +11,4 @@ namespace MansehraPaintHouse.Core.Interfaces.IRepositories
         Task ToggleCategoryStatusAsync(int id);
         IQueryable<Category> SearchCategories(string searchTerm);
     }
-} 
+}
