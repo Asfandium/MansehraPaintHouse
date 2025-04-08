@@ -3,6 +3,7 @@ using MansehraPaintHouse.Core.Interfaces.IServices;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.IO;
+using Microsoft.EntityFrameworkCore;
 
 namespace MansehraPaintHouse.Admin.Controllers
 {
@@ -25,6 +26,10 @@ namespace MansehraPaintHouse.Admin.Controllers
         public async Task<IActionResult> ProductIndex(string searchTerm, int pageNumber = 1, int pageSize = 10)
         {
             var products = await _productService.SearchProductsAsync(searchTerm);
+            
+            // Include the Category navigation property
+            products = products.Include(p => p.Category);
+            
             var paginatedList = await PaginatedList<Product>.CreateAsync(products, pageNumber, pageSize);
             ViewBag.SearchTerm = searchTerm;
             return View(paginatedList);
