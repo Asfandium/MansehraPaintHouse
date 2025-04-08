@@ -42,13 +42,33 @@ namespace MansehraPaintHouse.Infrastructure.Services
 
         public async Task<Product> CreateProductAsync(Product product)
         {
-            await _productRepository.AddAsync(product);
-            return product;
+            try
+            {
+                await _productRepository.AddAsync(product);
+                return product;
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                System.Diagnostics.Debug.WriteLine($"Error in CreateProductAsync: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Stack trace: {ex.StackTrace}");
+                throw; // Re-throw the exception to be handled by the controller
+            }
         }
 
         public async Task UpdateProductAsync(Product product)
         {
-            _productRepository.Update(product);
+            try
+            {
+                _productRepository.Update(product);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                System.Diagnostics.Debug.WriteLine($"Error in UpdateProductAsync: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Stack trace: {ex.StackTrace}");
+                throw; // Re-throw the exception to be handled by the controller
+            }
         }
 
         public async Task DeleteProductAsync(int id)

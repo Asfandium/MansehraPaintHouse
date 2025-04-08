@@ -12,6 +12,7 @@ namespace MansehraPaintHouse.Core.Entities
         [Key]
         public int ProductID { get; set; }
         public int CategoryID { get; set; }
+        //public int? SubcategoryID { get; set; }
 
         [Required(ErrorMessage = "Name is required")]
         [StringLength(255, ErrorMessage = "Name cannot be longer than 255 characters")]
@@ -28,5 +29,15 @@ namespace MansehraPaintHouse.Core.Entities
         public DateTime UpdatedAt { get; set; }
         public bool IsActive { get; set; }
         public Category Category { get; set; }
+        //public Category Subcategory { get; set; }
+
+        [StringLength(7, ErrorMessage = "Size cannot be longer than 7 characters")]
+        public string? Size { get; set; }
+
+        [StringLength(255, ErrorMessage = "Color cannot be longer than 255 characters")]
+        public string? Color { get; set; }
+
+        [StringLength(7, ErrorMessage = "ColorCode cannot be longer than 7 characters")]
+        public string? ColorCode { get; set; }
     }
 }

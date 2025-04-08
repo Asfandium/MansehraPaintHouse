@@ -1,11 +1,46 @@
-USE [master]
+-- Switch to master before dropping the DB
+USE [master];
 GO
-DROP DATABASE IF EXISTS [MansehraPaintHouse]
+
+-- Terminate all connections and drop the database if it exists
+IF EXISTS (SELECT name FROM sys.databases WHERE name = N'MansehraPaintHouse')
+BEGIN
+    ALTER DATABASE [MansehraPaintHouse] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+    DROP DATABASE [MansehraPaintHouse];
+END
 GO
+
+-- Create new database
 CREATE DATABASE MansehraPaintHouse;
 GO
+
 USE MansehraPaintHouse;
 GO
+
+-- ============================================
+-- Drop tables if they already exist
+-- ============================================
+IF OBJECT_ID('POS_Transactions', 'U') IS NOT NULL DROP TABLE POS_Transactions;
+IF OBJECT_ID('Payments', 'U') IS NOT NULL DROP TABLE Payments;
+IF OBJECT_ID('OrderItems', 'U') IS NOT NULL DROP TABLE OrderItems;
+IF OBJECT_ID('Orders', 'U') IS NOT NULL DROP TABLE Orders;
+IF OBJECT_ID('PurchaseOrderItems', 'U') IS NOT NULL DROP TABLE PurchaseOrderItems;
+IF OBJECT_ID('PurchaseOrders', 'U') IS NOT NULL DROP TABLE PurchaseOrders;
+IF OBJECT_ID('BatchTracking', 'U') IS NOT NULL DROP TABLE BatchTracking;
+IF OBJECT_ID('Inventory', 'U') IS NOT NULL DROP TABLE Inventory;
+IF OBJECT_ID('Warehouses', 'U') IS NOT NULL DROP TABLE Warehouses;
+IF OBJECT_ID('ProductVariationAttributes', 'U') IS NOT NULL DROP TABLE ProductVariationAttributes;
+IF OBJECT_ID('AttributeValues', 'U') IS NOT NULL DROP TABLE AttributeValues;
+IF OBJECT_ID('Attributes', 'U') IS NOT NULL DROP TABLE Attributes;
+IF OBJECT_ID('ProductVariations', 'U') IS NOT NULL DROP TABLE ProductVariations;
+IF OBJECT_ID('Products', 'U') IS NOT NULL DROP TABLE Products;
+IF OBJECT_ID('Categories', 'U') IS NOT NULL DROP TABLE Categories;
+IF OBJECT_ID('Users', 'U') IS NOT NULL DROP TABLE Users;
+GO
+
+-- ============================================
+-- Recreate all tables (Updated and Cleaned)
+-- ============================================
 
 -- 1️⃣ Users & Authentication 
 CREATE TABLE Users (
@@ -43,6 +78,9 @@ CREATE TABLE Products (
     Image VARCHAR(255),
     SKU VARCHAR(50) UNIQUE NOT NULL,
     Price DECIMAL(10,2) NOT NULL,
+    Size VARCHAR(7),
+    Color VARCHAR(255),
+    ColorCode VARCHAR(7),
     StockQuantity INT DEFAULT 0,
     MinimumStockLevel INT DEFAULT 0,
     CreatedAt DATETIME2 DEFAULT CURRENT_TIMESTAMP,
