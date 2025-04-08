@@ -109,71 +109,73 @@
                                         }
                                     </td>
                                     <td>
-                                        <div class="btn-list flex-nowrap">
-                                            <a href="@Url.Action("ProductUpsert", "Product", new { id = product.ProductID })" class="btn btn-primary btn-sm">
-                                                Edit
+                                        <div class="btn-group">
+                                            <a asp-action="ProductUpsert" asp-route-id="@product.ProductID" class="btn btn-sm btn-primary me-2">
+                                                <i class="bi bi-pencil"></i> Edit
                                             </a>
-                                            <form asp-action="DeleteProduct" asp-route-id="@product.ProductID" method="post" style="display: inline;">
-                                                @Html.AntiForgeryToken()
-                                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this product?');">
-                                                    Delete
+                                            @if (product.IsActive)
+                                            {
+                                                <button type="button" class="btn btn-sm btn-danger delete-product" data-id="@product.ProductID" data-name="@product.Name">
+                                                    <i class="bi bi-trash"></i> Delete
                                                 </button>
-                                            </form>
-                                    <form asp-action="ToggleProductStatus" asp-route-id="@product.ProductID" method="post" style="display: inline;">
-                                        @Html.AntiForgeryToken()
-                                        <button type="submit" class="btn @(product.IsActive ? "btn-warning" : "btn-success") btn-sm">
-                                            @(product.IsActive ? "Deactivate" : "Activate")
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-        <div class="card-footer d-flex align-items-center">
-            <p class="m-0 text-muted">
-                Showing <span>@((Model.PageIndex - 1) * Model.PageSize + 1)</span>
-                to <span>@Math.Min(Model.PageIndex * Model.PageSize, Model.TotalItems)</span>
-                of <span>@Model.TotalItems</span> entries
-            </p>
-            <ul class="pagination m-0 ms-auto">
-                <li class="page-item @(!Model.HasPreviousPage ? "disabled" : "")">
-                    <a class="page-link"
-                       asp-action="ProductIndex"
-                       asp-route-pageNumber="@(Model.PageIndex - 1)"
-                       asp-route-pageSize="@Model.PageSize"
-                       asp-route-searchTerm="@ViewBag.SearchTerm"
-                       tabindex="-1"
-                       aria-disabled="@(!Model.HasPreviousPage)">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M15 6l-6 6l6 6" /></svg>
-                        prev
-                    </a>
-                </li>
+                                            }
+                                            else
+                                            {
+                                                <button type="button" class="btn btn-sm btn-success activate-product" data-id="@product.ProductID" data-name="@product.Name">
+                                                    <i class="bi bi-check-circle"></i> Activate
+                                                </button>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer d-flex align-items-center">
+                    <p class="m-0 text-muted">
+                        Showing <span>@((Model.PageIndex - 1) * Model.PageSize + 1)</span>
+                        to <span>@Math.Min(Model.PageIndex * Model.PageSize, Model.TotalItems)</span>
+                        of <span>@Model.TotalItems</span> entries
+                    </p>
+                    <ul class="pagination m-0 ms-auto">
+                        <li class="page-item @(!Model.HasPreviousPage ? "disabled" : "")">
+                            <a class="page-link"
+                               asp-action="ProductIndex"
+                               asp-route-pageNumber="@(Model.PageIndex - 1)"
+                               asp-route-pageSize="@Model.PageSize"
+                               asp-route-searchTerm="@ViewBag.SearchTerm"
+                               tabindex="-1"
+                               aria-disabled="@(!Model.HasPreviousPage)">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M15 6l-6 6l6 6" /></svg>
+                                prev
+                            </a>
+                        </li>
 
-                @for (int i = 1; i <= Model.TotalPages; i++)
-                {
-                    <li class="page-item @(i == Model.PageIndex ? "active" : "")">
-                        <a class="page-link"
-                           asp-action="ProductIndex"
-                           asp-route-pageNumber="@i"
-                           asp-route-pageSize="@Model.PageSize"
-                           asp-route-searchTerm="@ViewBag.SearchTerm">@i</a>
-                    </li>
-                }
+                        @for (int i = 1; i <= Model.TotalPages; i++)
+                        {
+                            <li class="page-item @(i == Model.PageIndex ? "active" : "")">
+                                <a class="page-link"
+                                   asp-action="ProductIndex"
+                                   asp-route-pageNumber="@i"
+                                   asp-route-pageSize="@Model.PageSize"
+                                   asp-route-searchTerm="@ViewBag.SearchTerm">@i</a>
+                            </li>
+                        }
 
-                <li class="page-item @(!Model.HasNextPage ? "disabled" : "")">
-                    <a class="page-link"
-                       asp-action="ProductIndex"
-                       asp-route-pageNumber="@(Model.PageIndex + 1)"
-                       asp-route-pageSize="@Model.PageSize"
-                       asp-route-searchTerm="@ViewBag.SearchTerm">
-                        next
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M9 6l6 6l-6 6" /></svg>
-                    </a>
-                </li>
-            </ul>
+                        <li class="page-item @(!Model.HasNextPage ? "disabled" : "")">
+                            <a class="page-link"
+                               asp-action="ProductIndex"
+                               asp-route-pageNumber="@(Model.PageIndex + 1)"
+                               asp-route-pageSize="@Model.PageSize"
+                               asp-route-searchTerm="@ViewBag.SearchTerm">
+                                next
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M9 6l6 6l-6 6" /></svg>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -185,6 +187,34 @@
 @section Scripts {
     <script>
         $(document).ready(function () {
+            // Show success message if exists
+            @if (TempData["success"] != null)
+            {
+                <text>
+                Swal.fire({
+                    title: 'Success!',
+                    text: '@TempData["success"]',
+                    icon: 'success',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+                </text>
+            }
+
+            // Show error message if exists
+            @if (TempData["error"] != null)
+            {
+                <text>
+                Swal.fire({
+                    title: 'Error!',
+                    text: '@TempData["error"]',
+                    icon: 'error',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+                </text>
+            }
+
             // Handle page size change
             $('#pageSizeInput').change(function () {
                 var newSize = $(this).val();
@@ -198,6 +228,92 @@
                     e.preventDefault();
                     $('#searchForm').submit();
                 }
+            });
+
+            // Handle delete button click
+            $('.delete-product').click(function () {
+                var productId = $(this).data('id');
+                var productName = $(this).data('name');
+                
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: `You want to delete "${productName}"?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, delete it!',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Create form and submit
+                        var form = $('<form>', {
+                            'method': 'POST',
+                            'action': '@Url.Action("DeleteProduct", "Product")'
+                        });
+                        
+                        // Add antiforgery token
+                        form.append($('<input>', {
+                            'type': 'hidden',
+                            'name': '__RequestVerificationToken',
+                            'value': $('input[name="__RequestVerificationToken"]').val()
+                        }));
+                        
+                        // Add product ID
+                        form.append($('<input>', {
+                            'type': 'hidden',
+                            'name': 'id',
+                            'value': productId
+                        }));
+                        
+                        // Add form to body and submit
+                        $('body').append(form);
+                        form.submit();
+                    }
+                });
+            });
+
+            // Handle activate button click
+            $('.activate-product').click(function () {
+                var productId = $(this).data('id');
+                var productName = $(this).data('name');
+                
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: `You want to activate "${productName}"?`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#28a745',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, activate it!',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Create form and submit
+                        var form = $('<form>', {
+                            'method': 'POST',
+                            'action': '@Url.Action("ToggleProductStatus", "Product")'
+                        });
+                        
+                        // Add antiforgery token
+                        form.append($('<input>', {
+                            'type': 'hidden',
+                            'name': '__RequestVerificationToken',
+                            'value': $('input[name="__RequestVerificationToken"]').val()
+                        }));
+                        
+                        // Add product ID
+                        form.append($('<input>', {
+                            'type': 'hidden',
+                            'name': 'id',
+                            'value': productId
+                        }));
+                        
+                        // Add form to body and submit
+                        $('body').append(form);
+                        form.submit();
+                    }
+                });
             });
         });
     </script>

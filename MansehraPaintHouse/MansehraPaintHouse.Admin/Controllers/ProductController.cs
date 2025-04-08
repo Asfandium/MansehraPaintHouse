@@ -300,26 +300,60 @@ namespace MansehraPaintHouse.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteProduct(int id)
         {
-            var product = await _productService.GetProductByIdAsync(id);
-            if (product != null && !string.IsNullOrEmpty(product.Image))
+            try
             {
-                var imagePath = Path.Combine(_webHostEnvironment.WebRootPath, product.Image.TrimStart('/'));
-                if (System.IO.File.Exists(imagePath))
+                var product = await _productService.GetProductByIdAsync(id);
+                if (product == null)
                 {
-                    System.IO.File.Delete(imagePath);
+                    TempData["error"] = "Product not found.";
+                    return RedirectToAction(nameof(ProductIndex));
                 }
-            }
 
-            await _productService.DeleteProductAsync(id);
-            return RedirectToAction(nameof(ProductIndex));
+                // Soft delete by setting IsActive to false
+                product.IsActive = false;
+                product.UpdatedAt = DateTime.Now;
+                await _productService.UpdateProductAsync(product);
+
+                TempData["success"] = "Product deleted successfully.";
+                return RedirectToAction(nameof(ProductIndex));
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error deleting product: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Stack trace: {ex.StackTrace}");
+                TempData["error"] = "An error occurred while deleting the product.";
+                return RedirectToAction(nameof(ProductIndex));
+            }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ToggleProductStatus(int id)
         {
-            await _productService.ToggleProductStatusAsync(id);
-            return RedirectToAction(nameof(ProductIndex));
+            try
+            {
+                var product = await _productService.GetProductByIdAsync(id);
+                if (product == null)
+                {
+                    TempData["error"] = "Product not found.";
+                    return RedirectToAction(nameof(ProductIndex));
+                }
+
+                // Toggle the status
+                product.IsActive = !product.IsActive;
+                product.UpdatedAt = DateTime.Now;
+                await _productService.UpdateProductAsync(product);
+
+                TempData["success"] = product.IsActive ? "Product activated successfully." : "Product deactivated successfully.";
+                return RedirectToAction(nameof(ProductIndex));
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error toggling product status: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Stack trace: {ex.StackTrace}");
+                TempData["error"] = "An error occurred while toggling the product status.";
+                return RedirectToAction(nameof(ProductIndex));
+            }
         }
 
         [HttpGet]
